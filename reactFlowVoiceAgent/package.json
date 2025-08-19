@@ -11,17 +11,18 @@
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
-    "@mcp-b/transports": "1.0.0",
+    "@mcp-b/transports": "^0.2.0",
     "@modelcontextprotocol/sdk": "^1.16.0",
     "@tailwindcss/postcss": "^4.1.11",
     "@tailwindcss/vite": "^4.1.11",
     "@types/lodash": "^4.17.20",
-    "esbuild": "^0.25.8",
     "eventemitter3": "^5.0.1",
     "lodash": "^4.17.21",
     "lucide-react": "^0.525.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-native": "^0.80.2",
+    "react-native-web": "^0.21.0",
     "reactflow": "^11.11.4",
     "zod": "^3.25.76"
   },
@@ -40,7 +41,6 @@
     "postcss": "^8",
     "tailwindcss": "^4.1.11",
     "typescript": "~5.8.3",
-    "typescript-eslint": "^8.35.1",
-    "vite": "^7.0.4"
+    "typescript-eslint": "^8.35.1"
   }
 }

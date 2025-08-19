@@ -23,6 +23,21 @@ const MCPServerNode: React.FC<NodeProps<MCPServerNodeData>> = ({ data }) => {
         position: 'relative',
       }}
     >
+      {/* MCP tag in top-right corner */}
+      <div
+        style={{
+          position: 'absolute',
+          top: '6px',
+          left: '8px',
+          fontSize: '10px',  // smaller font size
+          fontWeight: '600',
+          color: '#627d24ff',
+          userSelect: 'none',
+        }}
+      >
+        MCP
+      </div>
+
       {/* Status stripe */}
       <div
         style={{
