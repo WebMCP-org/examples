@@ -117,6 +117,30 @@ server.tool('ping', () => ({
   content: [{ type: 'text', text: 'pong' }],
 }));
 
+function updateMood(mood: string) {
+  showNotification(`Updated mood to: ${mood}`);
+  personalState.mood = mood;
+  updatePersonalStatus();
+}
+
+function addTodo(item: string) {
+  showNotification(`Added todo: ${item}`);
+  personalState.todoList.push(item);
+  updatePersonalStatus();
+}
+
+function recordThough(thought: string) {
+  showNotification(`Recorded new thought`);
+  personalState.lastThought = thought;
+  updatePersonalStatus();
+}
+
+function setCurrentProject(project: string) {
+  showNotification(`Updated current project to: ${project}`);
+  personalState.currentProject = project;
+  updatePersonalStatus();
+}
+
 // Personal AI tools
 server.tool(
   'updateMood',
@@ -125,9 +149,7 @@ server.tool(
     mood: z.string().describe("Your new mood (e.g., 'excited', 'focused', 'creative')"),
   },
   async ({ mood }) => {
-    showNotification(`Updated mood to: ${mood}`);
-    personalState.mood = mood;
-    updatePersonalStatus();
+    updateMood(mood);
     return {
       content: [
         { type: 'text', text: `Mood updated to: ${mood}. You can see it reflected on the page!` },
@@ -143,9 +165,7 @@ server.tool(
     item: z.string().describe('Todo item to add'),
   },
   async ({ item }) => {
-    showNotification(`Added todo: ${item}`);
-    personalState.todoList.push(item);
-    updatePersonalStatus();
+    addTodo(item);
     return {
       content: [
         {
@@ -164,9 +184,7 @@ server.tool(
     thought: z.string().describe('Your current thought or insight'),
   },
   async ({ thought }) => {
-    showNotification(`Recorded new thought`);
-    personalState.lastThought = thought;
-    updatePersonalStatus();
+    recordThough(thought);
     return {
       content: [{ type: 'text', text: `Thought recorded: "${thought}"` }],
     };
@@ -198,9 +216,7 @@ server.tool(
     project: z.string().describe('Name of the current project'),
   },
   async ({ project }) => {
-    showNotification(`Updated current project to: ${project}`);
-    personalState.currentProject = project;
-    updatePersonalStatus();
+    setCurrentProject(project);
     return {
       content: [{ type: 'text', text: `Current project updated to: ${project}` }],
     };
