@@ -141,6 +141,9 @@ function setCurrentProject(project: string) {
   updatePersonalStatus();
 }
 
+// Export functions for use in main.ts
+export { updateMood, addTodo, recordThough, setCurrentProject };
+
 // Personal AI tools
 server.tool(
   'updateMood',
