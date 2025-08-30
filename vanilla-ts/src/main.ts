@@ -2,6 +2,7 @@ import { setupCounter } from './counter.ts';
 import './style.css';
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
+  <!-- Header Section -->
   <div>
     <div style="text-align: center; margin-bottom: 2rem;">
       <h1 style="background: linear-gradient(135deg, #6366f1, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 3rem; margin: 1rem 0;">
@@ -12,6 +13,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
       </p>
     </div>
     
+    <!-- How it works section -->
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin: 2rem 0;">
       <div style="background: #f8fafc; padding: 1.5rem; border-radius: 12px; border: 2px solid #e2e8f0;">
         <h3 style="color: #1e293b; margin-top: 0;">🎯 How This Works</h3>
@@ -23,19 +25,20 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
         </ol>
       </div>
       
+      <-- Tools Section -->
       <div style="background: #f0f9ff; padding: 1.5rem; border-radius: 12px; border: 2px solid #bae6fd;">
         <h3 style="color: #0c4a6e; margin-top: 0;">🛠️ Available Tools</h3>
         <ul style="color: #0369a1; line-height: 1.6; font-size: 0.9rem;">
           <li><strong>updateMood</strong> - Change my mood</li>
           <li><strong>setCurrentProject</strong> - Update what I'm working on</li>
           <li><strong>addTodo</strong> - Add items to my todo list</li>
-          <li><strong>changeFavoriteColor</strong> - Change the page theme</li>
           <li><strong>recordThought</strong> - Save a thought</li>
           <li><strong>getMyStatus</strong> - Get full status report</li>
         </ul>
       </div>
     </div>
 
+    <!-- Counter Section -->
     <div class="card">
       <button id="counter" type="button"></button>
       <p style="margin-top: 1rem; color: #6b7280; font-size: 0.9rem;">
