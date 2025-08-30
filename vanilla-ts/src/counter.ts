@@ -82,7 +82,7 @@ function updatePersonalStatus() {
               <ul style="margin: 8px 0 0 0; padding-left: 20px;">
                 ${personalState.todoList
                   .map(
-                    (item, index) => `
+                    (item, _index) => `
                   <li style="margin: 4px 0; padding: 4px 8px; background: #f9fafb; border-radius: 4px;">
                     ${item}
                   </li>

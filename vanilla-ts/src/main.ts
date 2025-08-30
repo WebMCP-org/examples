@@ -1,5 +1,4 @@
 import { setupCounter } from './counter.ts';
-import './mcp';
 import './style.css';
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
