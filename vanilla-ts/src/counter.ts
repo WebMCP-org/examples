@@ -191,6 +191,22 @@ server.tool('getMyStatus', 'Get a complete overview of my current status', {}, a
   };
 });
 
+server.tool(
+  'setCurrentProject',
+  'Update the current project I am working on',
+  {
+    project: z.string().describe('Name of the current project'),
+  },
+  async ({ project }) => {
+    showNotification(`Updated current project to: ${project}`);
+    personalState.currentProject = project;
+    updatePersonalStatus();
+    return {
+      content: [{ type: 'text', text: `Current project updated to: ${project}` }],
+    };
+  }
+);
+
 const transport = new TabServerTransport({
   allowedOrigins: ['*'],
 });
