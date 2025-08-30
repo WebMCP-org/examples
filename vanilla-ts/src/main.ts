@@ -45,6 +45,9 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
         ↑ Traditional button (click to count) vs AI tools (use extension) ↓
       </p>
     </div>
+
+    <!-- Personal Status Area - populated when logged in -->
+    <div id="personal-status"></div>
   </div>
 `;
 
