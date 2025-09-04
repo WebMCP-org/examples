@@ -1,4 +1,4 @@
-import { setupCounter, updateMood, addTodo, recordThough, setCurrentProject } from './counter.ts';
+import { updateMood, addTodo, recordThough, setCurrentProject, incrementCounter } from './counter.ts';
 import './style.css';
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
@@ -67,6 +67,30 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
               onmouseout="this.style.background='#f59e0b'"
             >
               Set
+            </button>
+          </div>
+        </div>
+
+        <!-- Counter Input -->
+        <div style="background: white; padding: 1.25rem; border-radius: 12px; border: 2px solid #3b82f6;">
+          <label style="display: block; color: #1e40af; font-weight: bold; margin-bottom: 0.5rem;">
+            🔢 Increment Counter
+          </label>
+          <div style="display: flex; gap: 0.5rem;">
+            <input 
+              type="number" 
+              id="counter-input" 
+              placeholder="Amount (e.g., 1, 5, -2)"
+              value="1"
+              style="flex: 1; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 8px; font-size: 0.9rem;"
+            />
+            <button 
+              id="counter-btn"
+              style="background: #3b82f6; color: white; border: none; padding: 0.75rem 1rem; border-radius: 8px; font-weight: bold; cursor: pointer; transition: all 0.2s;"
+              onmouseover="this.style.background='#2563eb'"
+              onmouseout="this.style.background='#3b82f6'"
+            >
+              +/-
             </button>
           </div>
         </div>
@@ -141,18 +165,8 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
         </div>
       </div>
     </div>
-
-    <!-- Counter Section -->
-    <div class="card">
-      <button id="counter" type="button"></button>
-      <p style="margin-top: 1rem; color: #6b7280; font-size: 0.9rem;">
-        ↑ Traditional button (click to count) vs AI tools (use extension) ↓
-      </p>
-    </div>
   </div>
 `;
-
-setupCounter(document.querySelector<HTMLButtonElement>('#counter')!);
 
 // Add event handlers for the interactive controls immediately (not waiting for DOMContentLoaded)
 // Mood input handler
@@ -174,6 +188,22 @@ moodInput?.addEventListener('keypress', (e) => {
       updateMood(mood);
       moodInput.value = '';
     }
+  }
+});
+
+// Counter input handler
+const counterBtn = document.getElementById('counter-btn');
+const counterInput = document.getElementById('counter-input') as HTMLInputElement;
+
+counterBtn?.addEventListener('click', () => {
+  const amount = parseInt(counterInput.value) || 1;
+  incrementCounter(amount);
+});
+
+counterInput?.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    const amount = parseInt(counterInput.value) || 1;
+    incrementCounter(amount);
   }
 });
 

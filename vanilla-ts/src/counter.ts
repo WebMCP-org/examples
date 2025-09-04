@@ -105,9 +105,6 @@ function updatePersonalStatus() {
           <div style="background: white; padding: 12px; border-radius: 8px; border-left: 4px solid #10b981;">
             <strong>Working on:</strong> ${personalState.currentProject}
           </div>
-          <div style="background: white; padding: 12px; border-radius: 8px; border-left: 4px solid #f59e0b;">
-            <strong>Visits today:</strong> <span style="font-size: 1.2em; font-weight: bold;">${personalState.visitCount}</span>
-          </div>
           <div style="background: white; padding: 12px; border-radius: 8px; border-left: 4px solid #3b82f6;">
             <strong>Counter:</strong> <span style="font-size: 1.2em; font-weight: bold;">${personalState.counter}</span>
           </div>
@@ -166,8 +163,14 @@ function setCurrentProject(project: string) {
   updatePersonalStatus();
 }
 
+function incrementCounter(amount: number) {
+  showNotification(`Counter ${amount >= 0 ? 'incremented' : 'decremented'} by ${Math.abs(amount)}`);
+  personalState.counter += amount;
+  updatePersonalStatus();
+}
+
 // Export functions for use in main.ts
-export { updateMood, addTodo, recordThough, setCurrentProject };
+export { updateMood, addTodo, recordThough, setCurrentProject, incrementCounter };
 
 // Personal AI tools
 server.tool(
@@ -231,8 +234,7 @@ server.tool('getMyStatus', 'Get a complete overview of my current status', {}, a
 📋 Todos: ${personalState.todoList.length} items (${personalState.todoList.join(', ')})
 🎨 Favorite Color: ${personalState.favoriteColor}
 💭 Last Thought: "${personalState.lastThought}"
-👀 Visits Today: ${personalState.visitCount}
-🔢 Counter: ${personalState.counter}`,
+ Counter: ${personalState.counter}`,
       },
     ],
   };
@@ -277,6 +279,33 @@ if (document.readyState === 'loading') {
 } else {
   initializePersonalStatus();
 }
+
+// MCP tools for counter
+server.tool('Increment', 'Increment the counter by 1', {}, async () => {
+  incrementCounter(1);
+  return {
+    content: [{ type: 'text', text: `Counter incremented to ${personalState.counter}!` }],
+  };
+});
+
+server.tool(
+  'Increment by x',
+  'Increment the counter by a specified amount',
+  {
+    amount: z.number().describe('the amount to increment by (can be negative or positive)'),
+  },
+  async ({ amount }) => {
+    incrementCounter(amount);
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `Counter ${amount > 0 ? 'incremented' : 'decremented'} by ${Math.abs(amount)} to ${personalState.counter}!`,
+        },
+      ],
+    };
+  }
+);
 
 export function setupCounter(element: HTMLButtonElement) {
   let counter = 0;
