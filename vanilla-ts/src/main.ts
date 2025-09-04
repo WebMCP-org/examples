@@ -44,7 +44,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
         🎮 Try the Interactive Controls
       </h3>
       <p style="text-align: center; color: #78350f; margin-bottom: 2rem; font-size: 0.95rem;">
-        These inputs directly call the same functions as the AI tools - watch the status update below!
+        These inputs directly call the same functions as the AI tools - watch the status update to the right ➡!
       </p>
       
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">

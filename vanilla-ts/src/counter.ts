@@ -10,6 +10,7 @@ interface PersonalState {
   favoriteColor: string;
   lastThought: string;
   visitCount: number;
+  counter: number;
 }
 
 const personalState: PersonalState = {
@@ -19,6 +20,7 @@ const personalState: PersonalState = {
   favoriteColor: '#6366f1',
   lastThought: 'This MCP-B thing is pretty amazing!',
   visitCount: 0,
+  counter: 0,
 };
 
 // Show notification when AI calls a tool
@@ -105,6 +107,9 @@ function updatePersonalStatus() {
           </div>
           <div style="background: white; padding: 12px; border-radius: 8px; border-left: 4px solid #f59e0b;">
             <strong>Visits today:</strong> <span style="font-size: 1.2em; font-weight: bold;">${personalState.visitCount}</span>
+          </div>
+          <div style="background: white; padding: 12px; border-radius: 8px; border-left: 4px solid #3b82f6;">
+            <strong>Counter:</strong> <span style="font-size: 1.2em; font-weight: bold;">${personalState.counter}</span>
           </div>
           <div style="background: white; padding: 12px; border-radius: 8px; border-left: 4px solid #8b5cf6;">
             <strong>Last thought:</strong> <em>"${personalState.lastThought}"</em>
@@ -226,7 +231,8 @@ server.tool('getMyStatus', 'Get a complete overview of my current status', {}, a
 📋 Todos: ${personalState.todoList.length} items (${personalState.todoList.join(', ')})
 🎨 Favorite Color: ${personalState.favoriteColor}
 💭 Last Thought: "${personalState.lastThought}"
-👀 Visits Today: ${personalState.visitCount}`,
+👀 Visits Today: ${personalState.visitCount}
+🔢 Counter: ${personalState.counter}`,
       },
     ],
   };
@@ -276,14 +282,16 @@ export function setupCounter(element: HTMLButtonElement) {
   let counter = 0;
   const setCounter = (count: number) => {
     counter = count;
+    personalState.counter = count;
     element.innerHTML = `count is ${counter}`;
+    updatePersonalStatus();
   };
   element.addEventListener('click', () => setCounter(counter + 1));
   setCounter(0);
 
   server.registerTool('Increment', {}, () => {
     setCounter(counter + 1);
-    showNotification(`Counter incremented to ${counter + 1}`);
+    showNotification(`Counter incremented to ${counter}`);
     return {
       content: [{ type: 'text', text: 'incremented!' }],
     };
@@ -299,7 +307,7 @@ export function setupCounter(element: HTMLButtonElement) {
     ({ amount }) => {
       setCounter(counter + amount);
       showNotification(
-        `Counter ${amount > 0 ? 'incremented' : 'decremented'} by ${Math.abs(amount)} to ${counter + amount}`
+        `Counter ${amount > 0 ? 'incremented' : 'decremented'} by ${Math.abs(amount)} to ${counter}`
       );
       return {
         content: [
