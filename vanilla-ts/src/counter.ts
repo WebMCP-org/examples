@@ -52,54 +52,74 @@ function showNotification(message: string, type: 'success' | 'info' = 'success')
   }, 3000);
 }
 
+function ensureStatusPanel(): HTMLElement {
+  let panel = document.getElementById('personal-status');
+  if (!panel) {
+    panel = document.createElement('div');
+    panel.id = 'personal-status';
+    panel.style.cssText = `
+      position: fixed;
+      top: 50%;
+      right: 24px;
+      transform: translateY(-50%);
+      width: 340px;
+      max-height: 80vh;
+      overflow-y: auto;
+      z-index: 2000;
+      pointer-events: auto;
+      transition: opacity .25s ease, transform .25s ease;
+      opacity: 0;
+    `;
+    document.body.appendChild(panel);
+    requestAnimationFrame(() => {
+      panel!.style.opacity = '1';
+    });
+  }
+  return panel;
+}
+
 // Update page with current state
 function updatePersonalStatus() {
-  const statusElement = document.getElementById('personal-status');
-  if (statusElement) {
-    // Add some animation when updating
-    statusElement.style.transform = 'scale(0.98)';
-    statusElement.style.transition = 'all 0.3s ease';
+  const statusElement = ensureStatusPanel();
+  statusElement.style.transform = 'translateY(-50%) scale(0.985)';
+  statusElement.style.transition = 'transform 0.25s ease';
 
-    setTimeout(() => {
-      statusElement.innerHTML = `
-        <div style="background: linear-gradient(135deg, ${personalState.favoriteColor}20, #ffffff); padding: 20px; border-radius: 12px; margin: 20px 0; border: 2px solid ${personalState.favoriteColor}40; box-shadow: 0 4px 20px ${personalState.favoriteColor}20;">
-          <h3 style="color: ${personalState.favoriteColor}; margin-top: 0;">🤖 My AI Assistant Status</h3>
-          <div style="display: grid; gap: 12px;">
-            <div style="background: white; padding: 12px; border-radius: 8px; border-left: 4px solid ${personalState.favoriteColor};">
-              <strong>Current Mood:</strong> <span style="color: ${personalState.favoriteColor}; font-weight: bold;">${personalState.mood}</span>
-            </div>
-            <div style="background: white; padding: 12px; border-radius: 8px; border-left: 4px solid #10b981;">
-              <strong>Working on:</strong> ${personalState.currentProject}
-            </div>
-            <div style="background: white; padding: 12px; border-radius: 8px; border-left: 4px solid #f59e0b;">
-              <strong>Visits today:</strong> <span style="font-size: 1.2em; font-weight: bold;">${personalState.visitCount}</span>
-            </div>
-            <div style="background: white; padding: 12px; border-radius: 8px; border-left: 4px solid #8b5cf6;">
-              <strong>Last thought:</strong> <em>"${personalState.lastThought}"</em>
-            </div>
-            <div style="background: white; padding: 12px; border-radius: 8px; border-left: 4px solid #ef4444;">
-              <strong>Todo List (${personalState.todoList.length} items):</strong> 
-              <ul style="margin: 8px 0 0 0; padding-left: 20px;">
-                ${personalState.todoList
-                  .map(
-                    (item, _index) => `
-                  <li style="margin: 4px 0; padding: 4px 8px; background: #f9fafb; border-radius: 4px;">
-                    ${item}
-                  </li>
-                `
-                  )
-                  .join('')}
-              </ul>
-            </div>
+  // Build todo list HTML separately (avoid nested template backticks confusion)
+  const todosHtml = personalState.todoList
+    .map(
+      (item) => `
+        <li style="margin: 4px 0; padding: 4px 8px; background: #f9fafb; border-radius: 4px;">${item}</li>`
+    )
+    .join('');
+
+  setTimeout(() => {
+    statusElement.innerHTML = `
+      <div style="background: linear-gradient(135deg, ${personalState.favoriteColor}20, #ffffff); padding: 20px; border-radius: 12px; margin: 0; border: 2px solid ${personalState.favoriteColor}40; box-shadow: 0 4px 20px ${personalState.favoriteColor}20; box-sizing: border-box;">
+        <h3 style="color: ${personalState.favoriteColor}; margin-top: 0;">🤖 My AI Assistant Status</h3>
+        <div style="display: grid; gap: 12px;">
+          <div style="background: white; padding: 12px; border-radius: 8px; border-left: 4px solid ${personalState.favoriteColor};">
+            <strong>Current Mood:</strong> <span style="color: ${personalState.favoriteColor}; font-weight: bold;">${personalState.mood}</span>
           </div>
-          <div style="margin-top: 16px; text-align: center; font-size: 0.9em; color: #6b7280;">
-            🔄 Last updated: ${new Date().toLocaleTimeString()}
+          <div style="background: white; padding: 12px; border-radius: 8px; border-left: 4px solid #10b981;">
+            <strong>Working on:</strong> ${personalState.currentProject}
+          </div>
+          <div style="background: white; padding: 12px; border-radius: 8px; border-left: 4px solid #f59e0b;">
+            <strong>Visits today:</strong> <span style="font-size: 1.2em; font-weight: bold;">${personalState.visitCount}</span>
+          </div>
+          <div style="background: white; padding: 12px; border-radius: 8px; border-left: 4px solid #8b5cf6;">
+            <strong>Last thought:</strong> <em>"${personalState.lastThought}"</em>
+          </div>
+          <div style="background: white; padding: 12px; border-radius: 8px; border-left: 4px solid #ef4444;">
+            <strong>Todo List (${personalState.todoList.length} items):</strong>
+            <ul style="margin: 8px 0 0 0; padding-left: 20px;">${todosHtml}</ul>
           </div>
         </div>
-      `;
-      statusElement.style.transform = 'scale(1)';
-    }, 150);
-  }
+        <div style="margin-top: 16px; text-align: center; font-size: 0.9em; color: #6b7280;">
+          🔄 Last updated: ${new Date().toLocaleTimeString()}
+        </div>
+      </div>`;
+    statusElement.style.transform = 'translateY(-50%) scale(1)';
+  }, 60);
 }
 
 const server = new McpServer(
@@ -235,15 +255,14 @@ await server.connect(transport);
 // Initialize personal status on page load
 function initializePersonalStatus() {
   personalState.visitCount++;
+  ensureStatusPanel();
 
-  // Add our status section to the page
+  // Reserve space on the right so content doesn't sit behind panel
   const app = document.querySelector('#app');
-  if (app) {
-    const statusDiv = document.createElement('div');
-    statusDiv.id = 'personal-status';
-    app.appendChild(statusDiv);
-    updatePersonalStatus();
+  if (app instanceof HTMLElement) {
+    app.style.paddingRight = '380px';
   }
+  updatePersonalStatus();
 }
 
 // Wait for DOM then initialize

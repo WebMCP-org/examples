@@ -3,7 +3,7 @@ import './style.css';
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <!-- Header Section -->
-  <div>
+  <div style="/* reserve space for fixed status panel */">
     <div style="text-align: center; margin-bottom: 2rem;">
       <h1 style="background: linear-gradient(135deg, #6366f1, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 3rem; margin: 1rem 0;">
         🤖 My AI-Powered Website
@@ -149,101 +149,96 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
         ↑ Traditional button (click to count) vs AI tools (use extension) ↓
       </p>
     </div>
-
-    <!-- Personal Status Area - populated when logged in -->
-    <div id="personal-status"></div>
   </div>
 `;
 
 setupCounter(document.querySelector<HTMLButtonElement>('#counter')!);
 
-// Add event handlers for the interactive controls
-document.addEventListener('DOMContentLoaded', () => {
-  // Mood input handler
-  const moodBtn = document.getElementById('mood-btn');
-  const moodInput = document.getElementById('mood-input') as HTMLInputElement;
-  
-  moodBtn?.addEventListener('click', () => {
+// Add event handlers for the interactive controls immediately (not waiting for DOMContentLoaded)
+// Mood input handler
+const moodBtn = document.getElementById('mood-btn');
+const moodInput = document.getElementById('mood-input') as HTMLInputElement;
+
+moodBtn?.addEventListener('click', () => {
+  const mood = moodInput.value.trim();
+  if (mood) {
+    updateMood(mood);
+    moodInput.value = '';
+  }
+});
+
+moodInput?.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
     const mood = moodInput.value.trim();
     if (mood) {
       updateMood(mood);
       moodInput.value = '';
     }
-  });
+  }
+});
 
-  moodInput?.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      const mood = moodInput.value.trim();
-      if (mood) {
-        updateMood(mood);
-        moodInput.value = '';
-      }
-    }
-  });
+// Project input handler
+const projectBtn = document.getElementById('project-btn');
+const projectInput = document.getElementById('project-input') as HTMLInputElement;
 
-  // Project input handler
-  const projectBtn = document.getElementById('project-btn');
-  const projectInput = document.getElementById('project-input') as HTMLInputElement;
-  
-  projectBtn?.addEventListener('click', () => {
+projectBtn?.addEventListener('click', () => {
+  const project = projectInput.value.trim();
+  if (project) {
+    setCurrentProject(project);
+    projectInput.value = '';
+  }
+});
+
+projectInput?.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
     const project = projectInput.value.trim();
     if (project) {
       setCurrentProject(project);
       projectInput.value = '';
     }
-  });
+  }
+});
 
-  projectInput?.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      const project = projectInput.value.trim();
-      if (project) {
-        setCurrentProject(project);
-        projectInput.value = '';
-      }
-    }
-  });
+// Todo input handler
+const todoBtn = document.getElementById('todo-btn');
+const todoInput = document.getElementById('todo-input') as HTMLInputElement;
 
-  // Todo input handler
-  const todoBtn = document.getElementById('todo-btn');
-  const todoInput = document.getElementById('todo-input') as HTMLInputElement;
-  
-  todoBtn?.addEventListener('click', () => {
+todoBtn?.addEventListener('click', () => {
+  const todo = todoInput.value.trim();
+  if (todo) {
+    addTodo(todo);
+    todoInput.value = '';
+  }
+});
+
+todoInput?.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
     const todo = todoInput.value.trim();
     if (todo) {
       addTodo(todo);
       todoInput.value = '';
     }
-  });
+  }
+});
 
-  todoInput?.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      const todo = todoInput.value.trim();
-      if (todo) {
-        addTodo(todo);
-        todoInput.value = '';
-      }
-    }
-  });
+// Thought input handler
+const thoughtBtn = document.getElementById('thought-btn');
+const thoughtInput = document.getElementById('thought-input') as HTMLInputElement;
 
-  // Thought input handler
-  const thoughtBtn = document.getElementById('thought-btn');
-  const thoughtInput = document.getElementById('thought-input') as HTMLInputElement;
-  
-  thoughtBtn?.addEventListener('click', () => {
+thoughtBtn?.addEventListener('click', () => {
+  const thought = thoughtInput.value.trim();
+  if (thought) {
+    recordThough(thought);
+    thoughtInput.value = '';
+  }
+});
+
+thoughtInput?.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
     const thought = thoughtInput.value.trim();
     if (thought) {
       recordThough(thought);
       thoughtInput.value = '';
     }
-  });
-
-  thoughtInput?.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      const thought = thoughtInput.value.trim();
-      if (thought) {
-        recordThough(thought);
-        thoughtInput.value = '';
-      }
-    }
-  });
+  }
 });
