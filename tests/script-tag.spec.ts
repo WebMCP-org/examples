@@ -57,9 +57,15 @@ test.describe('Script Tag Example', () => {
   test('should add a todo via UI', async ({ page }) => {
     await page.goto('http://localhost:5173');
 
+    // Wait for initial todos to render
+    await page.waitForTimeout(1500);
+
     // Add a todo
     await page.fill('#input', 'Test todo');
     await page.click('button:has-text("Add")');
+
+    // Wait for the todo to be added and rendered
+    await page.waitForTimeout(500);
 
     // Check it was added
     const todos = page.locator('#todos .todo');

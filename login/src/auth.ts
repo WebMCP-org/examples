@@ -215,12 +215,12 @@ export async function setupMcpTools() {
       mood: z.string().describe("Your new mood (e.g., 'excited', 'focused', 'creative')"),
     },
     async execute({ mood }) {
-      showNotification(\`Updated mood to: \${mood}\`);
+      showNotification(`Updated mood to: ${mood}`);
       personalState.mood = mood;
       updatePersonalStatus();
       return {
         content: [
-          { type: 'text', text: \`Mood updated to: \${mood}. You can see it reflected on the page!\` },
+          { type: 'text', text: `Mood updated to: ${mood}. You can see it reflected on the page!` },
         ],
       };
     }
@@ -233,14 +233,14 @@ export async function setupMcpTools() {
       item: z.string().describe('Todo item to add'),
     },
     async execute({ item }) {
-      showNotification(\`Added todo: \${item}\`);
+      showNotification(`Added todo: ${item}`);
       personalState.todoList.push(item);
       updatePersonalStatus();
       return {
         content: [
           {
             type: 'text',
-            text: \`Added "\${item}" to todo list. Total items: \${personalState.todoList.length}\`,
+            text: `Added "${item}" to todo list. Total items: ${personalState.todoList.length}`,
           },
         ],
       };
@@ -254,11 +254,11 @@ export async function setupMcpTools() {
       thought: z.string().describe('Your current thought or insight'),
     },
     async execute({ thought }) {
-      showNotification(\`Recorded new thought\`);
+      showNotification(`Recorded new thought`);
       personalState.lastThought = thought;
       updatePersonalStatus();
       return {
-        content: [{ type: 'text', text: \`Thought recorded: "\${thought}"\` }],
+        content: [{ type: 'text', text: `Thought recorded: "${thought}"` }],
       };
     }
   });
@@ -270,11 +270,11 @@ export async function setupMcpTools() {
       project: z.string().describe('Name of the current project'),
     },
     async execute({ project }) {
-      showNotification(\`Updated current project to: \${project}\`);
+      showNotification(`Updated current project to: ${project}`);
       personalState.currentProject = project;
       updatePersonalStatus();
       return {
-        content: [{ type: 'text', text: \`Current project updated to: \${project}\` }],
+        content: [{ type: 'text', text: `Current project updated to: ${project}` }],
       };
     }
   });
@@ -286,12 +286,12 @@ export async function setupMcpTools() {
       color: z.string().describe('New favorite color in hex format (e.g., #ff5733)'),
     },
     async execute({ color }) {
-      showNotification(\`Changed favorite color to: \${color}\`);
+      showNotification(`Changed favorite color to: ${color}`);
       personalState.favoriteColor = color;
       document.documentElement.style.setProperty('--favorite-color', color);
       updatePersonalStatus();
       return {
-        content: [{ type: 'text', text: \`Favorite color changed to: \${color}\` }],
+        content: [{ type: 'text', text: `Favorite color changed to: ${color}` }],
       };
     }
   });
@@ -301,18 +301,18 @@ export async function setupMcpTools() {
     description: 'Get a complete overview of my current status',
     inputSchema: {},
     async execute() {
-      showNotification(\`Generated status report\`, 'info');
+      showNotification(`Generated status report`, 'info');
       return {
         content: [
           {
             type: 'text',
-            text: \`Current Status Report:
-  🎭 Mood: \${personalState.mood}
-  🚀 Project: \${personalState.currentProject}
-  📋 Todos: \${personalState.todoList.length} items (\${personalState.todoList.join(', ')})
-  🎨 Favorite Color: \${personalState.favoriteColor}
-  💭 Last Thought: "\${personalState.lastThought}"
-  👀 Visits Today: \${personalState.visitCount}\`,
+            text: `Current Status Report:
+  🎭 Mood: ${personalState.mood}
+  🚀 Project: ${personalState.currentProject}
+  📋 Todos: ${personalState.todoList.length} items (${personalState.todoList.join(', ')})
+  🎨 Favorite Color: ${personalState.favoriteColor}
+  💭 Last Thought: "${personalState.lastThought}"
+  👀 Visits Today: ${personalState.visitCount}`,
           },
         ],
       };
