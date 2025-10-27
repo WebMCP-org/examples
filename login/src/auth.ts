@@ -1,13 +1,19 @@
-import { TabServerTransport } from '@mcp-b/transports';
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+// Type declarations for window.mcp
+import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+
+declare global {
+  interface Window {
+    mcp: McpServer;
+  }
+}
+
 import { z } from 'zod';
 
 // Authentication state management
 interface AuthState {
   isLoggedIn: boolean;
   username: string | null;
-  server: McpServer | null;
-  transport: TabServerTransport | null;
+  toolsRegistered: boolean;
 }
 
 interface PersonalState {
@@ -22,8 +28,7 @@ interface PersonalState {
 const authState: AuthState = {
   isLoggedIn: false,
   username: null,
-  server: null,
-  transport: null,
+  toolsRegistered: false,
 };
 
 const personalState: PersonalState = {
@@ -124,7 +129,7 @@ export async function performLogin(username?: string) {
   authState.isLoggedIn = true;
   authState.username = user;
 
-  await setupMcpServer();
+  await setupMcpTools();
   updateUI();
   showNotification(`Successfully logged in as ${user}`, 'success');
 
@@ -144,8 +149,16 @@ export function performLogout() {
   // Clear auth state
   authState.isLoggedIn = false;
   authState.username = null;
+  authState.toolsRegistered = false;
 
-  stopMcpServer();
+  // Reset personal state
+  personalState.mood = 'excited about MCP-B';
+  personalState.currentProject = 'Building an AI-powered personal website';
+  personalState.todoList = ['Learn MCP-B', 'Build cool tools', 'Show off to friends'];
+  personalState.favoriteColor = '#6366f1';
+  personalState.lastThought = 'This MCP-B thing is pretty amazing!';
+  personalState.visitCount = 0;
+
   updateUI();
   showNotification(`Successfully logged out ${previousUser}`, 'success');
 
@@ -170,60 +183,39 @@ export function setupAuthButtons(
   updateUI();
 }
 
-async function stopMcpServer() {
-  if (!authState.server || !authState.transport) {
-    console.warn('MCP Server is not running.');
+export async function setupMcpTools() {
+  if (authState.toolsRegistered) {
+    console.warn('MCP tools already registered.');
     return;
   }
 
-  // Notify that the server is shutting down
-  console.log('[MCP Server] Shutting down...');
-
-  await authState.transport.close();
-  await authState.server.close();
-
-  authState.server = null;
-  authState.transport = null;
-  authState.isLoggedIn = false;
-  authState.username = null;
-
-  personalState.mood = 'excited about MCP-B';
-  personalState.currentProject = 'Building an AI-powered personal website';
-  personalState.todoList = ['Learn MCP-B', 'Build cool tools', 'Show off to friends'];
-  personalState.favoriteColor = '#6366f1';
-  personalState.lastThought = 'This MCP-B thing is pretty amazing!';
-  personalState.visitCount = 0;
-}
-
-export async function setupMcpServer() {
-  if (authState.server) {
-    console.warn('MCP Server is already set up.');
-    return;
+  // Wait for window.mcp to be available
+  if (!window.mcp) {
+    console.warn('window.mcp not available yet, waiting...');
+    await new Promise(resolve => setTimeout(resolve, 100));
   }
 
-  authState.transport = new TabServerTransport({ allowedOrigins: ['*'] });
-
-  // Create a new MCP server instance
-  authState.server = new McpServer(
+  // Register MCP tools using the global polyfill
+  window.mcp.registerTool(
+    'ping',
     {
-      name: 'PersonalAIWebsite',
-      version: '1.0.0',
+      title: 'Ping',
+      description: 'Simple ping test',
     },
-    {
-      capabilities: { tools: { listChanged: true } },
-    }
+    async () => ({
+      content: [{ type: 'text', text: 'pong' }],
+    })
   );
 
-  authState.server.tool('ping', () => ({
-    content: [{ type: 'text', text: 'pong' }],
-  }));
-
   // Personal AI tools
-  authState.server.tool(
+  window.mcp.registerTool(
     'updateMood',
-    'Update my current mood and see it reflect on the page',
     {
-      mood: z.string().describe("Your new mood (e.g., 'excited', 'focused', 'creative')"),
+      title: 'Update Mood',
+      description: 'Update my current mood and see it reflect on the page',
+      inputSchema: {
+        mood: z.string().describe("Your new mood (e.g., 'excited', 'focused', 'creative')"),
+      },
     },
     async ({ mood }) => {
       showNotification(`Updated mood to: ${mood}`);
@@ -237,11 +229,14 @@ export async function setupMcpServer() {
     }
   );
 
-  authState.server.tool(
+  window.mcp.registerTool(
     'addTodo',
-    'Add a new item to my todo list',
     {
-      item: z.string().describe('Todo item to add'),
+      title: 'Add Todo',
+      description: 'Add a new item to my todo list',
+      inputSchema: {
+        item: z.string().describe('Todo item to add'),
+      },
     },
     async ({ item }) => {
       showNotification(`Added todo: ${item}`);
@@ -258,11 +253,14 @@ export async function setupMcpServer() {
     }
   );
 
-  authState.server.tool(
+  window.mcp.registerTool(
     'recordThought',
-    'Record my latest thought or insight',
     {
-      thought: z.string().describe('Your current thought or insight'),
+      title: 'Record Thought',
+      description: 'Record my latest thought or insight',
+      inputSchema: {
+        thought: z.string().describe('Your current thought or insight'),
+      },
     },
     async ({ thought }) => {
       showNotification(`Recorded new thought`);
@@ -274,11 +272,14 @@ export async function setupMcpServer() {
     }
   );
 
-  authState.server.tool(
+  window.mcp.registerTool(
     'setCurrentProject',
-    'Update the current project I am working on',
     {
-      project: z.string().describe('Name of the current project'),
+      title: 'Set Current Project',
+      description: 'Update the current project I am working on',
+      inputSchema: {
+        project: z.string().describe('Name of the current project'),
+      },
     },
     async ({ project }) => {
       showNotification(`Updated current project to: ${project}`);
@@ -290,11 +291,14 @@ export async function setupMcpServer() {
     }
   );
 
-  authState.server.tool(
+  window.mcp.registerTool(
     'changeFavoriteColor',
-    'Change my favorite color and update the page theme',
     {
-      color: z.string().describe('New favorite color in hex format (e.g., #ff5733)'),
+      title: 'Change Favorite Color',
+      description: 'Change my favorite color and update the page theme',
+      inputSchema: {
+        color: z.string().describe('New favorite color in hex format (e.g., #ff5733)'),
+      },
     },
     async ({ color }) => {
       showNotification(`Changed favorite color to: ${color}`);
@@ -307,10 +311,12 @@ export async function setupMcpServer() {
     }
   );
 
-  authState.server.tool(
+  window.mcp.registerTool(
     'getMyStatus',
-    'Get a complete overview of my current status',
-    {},
+    {
+      title: 'Get My Status',
+      description: 'Get a complete overview of my current status',
+    },
     async () => {
       showNotification(`Generated status report`, 'info');
       return {
@@ -319,7 +325,7 @@ export async function setupMcpServer() {
             type: 'text',
             text: `Current Status Report:
   🎭 Mood: ${personalState.mood}
-  🚀 Project: ${personalState.currentProject}  
+  🚀 Project: ${personalState.currentProject}
   📋 Todos: ${personalState.todoList.length} items (${personalState.todoList.join(', ')})
   🎨 Favorite Color: ${personalState.favoriteColor}
   💭 Last Thought: "${personalState.lastThought}"
@@ -330,7 +336,8 @@ export async function setupMcpServer() {
     }
   );
 
-  await authState.server.connect(authState.transport);
+  authState.toolsRegistered = true;
+  console.log('MCP tools registered successfully!');
 }
 
 function updatePersonalStatus() {
@@ -358,7 +365,7 @@ function updatePersonalStatus() {
               <strong>Last thought:</strong> <em>"${personalState.lastThought}"</em>
             </div>
             <div style="background: white; padding: 12px; border-radius: 8px; border-left: 4px solid #ef4444;">
-              <strong>Todo List (${personalState.todoList.length} items):</strong> 
+              <strong>Todo List (${personalState.todoList.length} items):</strong>
               <ul style="margin: 8px 0 0 0; padding-left: 20px;">
                 ${personalState.todoList
                   .map(

@@ -14,8 +14,6 @@
     "vite": "^7.0.0"
   },
   "dependencies": {
-    "@mcp-b/transports": "^1.0.0",
-    "@modelcontextprotocol/sdk": "^1.15.0",
     "zod": "^3.25.74"
   }
 }

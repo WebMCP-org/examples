@@ -20,16 +20,6 @@
     "vite": "^7.0.4"
   },
   "dependencies": {
-    "@ai-sdk/google": "^1.2.19",
-    "@inquirer/prompts": "^7.5.3",
-    "@mcp-b/transports": "^1.0.0",
-    "@modelcontextprotocol/sdk": "^1.15.0",
-    "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.3",
-    "ai": "^4.3.16",
-    "cors": "^2.8.5",
-    "dotenv": "^16.5.0",
-    "express": "^5.1.0",
     "zod": "^3.25.67"
   },
   "private": true

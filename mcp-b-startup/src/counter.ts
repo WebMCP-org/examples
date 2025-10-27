@@ -1,35 +1,26 @@
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { TabServerTransport } from '@mcp-b/transports';
+// Type declarations for window.mcp
+import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+
+declare global {
+  interface Window {
+    mcp: McpServer;
+  }
+}
 
 import { z } from 'zod';
 
-function createTransport(): TabServerTransport {
-  const transport = new TabServerTransport({
-    allowedOrigins: ['*'],
-  });
+let counter = 0;
+let counterElement: HTMLButtonElement | null = null;
 
-  return transport;
-}
+const setCounter = (count: number) => {
+  counter = count;
+  if (counterElement) {
+    counterElement.innerHTML = `count is ${counter}`;
+  }
+};
 
 export async function setupCounter(element: HTMLButtonElement) {
-  const transport: TabServerTransport = createTransport();
-  // const server = createMcpServer(element);
-
-  const server = new McpServer({
-    name: 'test-video',
-    version: '1.0.0',
-    capabilities: {
-      tools: {},
-      resources: {},
-      prompts: {},
-    },
-  });
-
-  let counter = 0;
-  const setCounter = (count: number) => {
-    counter = count;
-    element.innerHTML = `count is ${counter}`;
-  };
+  counterElement = element;
 
   // Initialize the counter display
   setCounter(0);
@@ -37,11 +28,20 @@ export async function setupCounter(element: HTMLButtonElement) {
   // Add click handler for the button
   element.addEventListener('click', () => setCounter(counter + 1));
 
-  server.registerTool(
+  // Wait for window.mcp to be available
+  if (!window.mcp) {
+    console.warn('window.mcp not available yet, waiting...');
+    await new Promise(resolve => setTimeout(resolve, 100));
+  }
+
+  // Register MCP tools using the global polyfill
+  window.mcp.registerTool(
     'incrementCounter',
     {
+      title: 'Increment Counter',
+      description: 'Increment the counter by a specified amount',
       inputSchema: {
-        amount: z.number().optional().default(1),
+        amount: z.number().optional().default(1).describe('Amount to increment by'),
       },
     },
     async ({ amount = 1 }) => {
@@ -59,11 +59,13 @@ export async function setupCounter(element: HTMLButtonElement) {
     }
   );
 
-  server.registerTool(
+  window.mcp.registerTool(
     'setCounter',
     {
+      title: 'Set Counter',
+      description: 'Set the counter to a specific value',
       inputSchema: {
-        value: z.string(),
+        value: z.string().describe('Value to set the counter to'),
       },
     },
     async ({ value }) => {
@@ -80,10 +82,11 @@ export async function setupCounter(element: HTMLButtonElement) {
     }
   );
 
-  server.registerTool(
+  window.mcp.registerTool(
     'getCounter',
     {
-      inputSchema: {},
+      title: 'Get Counter',
+      description: 'Get the current counter value',
     },
     async () => {
       return {
@@ -97,8 +100,26 @@ export async function setupCounter(element: HTMLButtonElement) {
     }
   );
 
-  // Connect the server
-  await server.connect(transport);
+  console.log('MCP tools registered successfully!');
+}
 
-  return server;
+// Export functions for interactive controls
+export function updateMood(mood: string) {
+  console.log('Mood updated to:', mood);
+}
+
+export function addTodo(todo: string) {
+  console.log('Todo added:', todo);
+}
+
+export function recordThough(thought: string) {
+  console.log('Thought recorded:', thought);
+}
+
+export function setCurrentProject(project: string) {
+  console.log('Project set to:', project);
+}
+
+export function incrementCounter(amount: number) {
+  setCounter(counter + amount);
 }
