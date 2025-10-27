@@ -1,4 +1,4 @@
-// Type declarations for window.mcp
+// Type declarations for navigator.modelContext
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 declare global {
@@ -189,152 +189,135 @@ export async function setupMcpTools() {
     return;
   }
 
-  // Wait for window.mcp to be available
-  if (!window.mcp) {
-    console.warn('window.mcp not available yet, waiting...');
+  // Wait for navigator.modelContext to be available
+  if (!navigator.modelContext) {
+    console.warn('navigator.modelContext not available yet, waiting...');
     await new Promise(resolve => setTimeout(resolve, 100));
   }
 
   // Register MCP tools using the global polyfill
-  window.mcp.registerTool(
-    'ping',
-    {
-      title: 'Ping',
-      description: 'Simple ping test',
-    },
-    async () => ({
-      content: [{ type: 'text', text: 'pong' }],
-    })
-  );
+  navigator.modelContext.registerTool({
+    name: 'ping',
+    description: 'Simple ping test',
+    inputSchema: {},
+    async execute() {
+      return {
+        content: [{ type: 'text', text: 'pong' }],
+      };
+    }
+  });
 
   // Personal AI tools
-  window.mcp.registerTool(
-    'updateMood',
-    {
-      title: 'Update Mood',
-      description: 'Update my current mood and see it reflect on the page',
-      inputSchema: {
-        mood: z.string().describe("Your new mood (e.g., 'excited', 'focused', 'creative')"),
-      },
+  navigator.modelContext.registerTool({
+    name: 'updateMood',
+    description: 'Update my current mood and see it reflect on the page',
+    inputSchema: {
+      mood: z.string().describe("Your new mood (e.g., 'excited', 'focused', 'creative')"),
     },
-    async ({ mood }) => {
-      showNotification(`Updated mood to: ${mood}`);
+    async execute({ mood }) {
+      showNotification(\`Updated mood to: \${mood}\`);
       personalState.mood = mood;
       updatePersonalStatus();
       return {
         content: [
-          { type: 'text', text: `Mood updated to: ${mood}. You can see it reflected on the page!` },
+          { type: 'text', text: \`Mood updated to: \${mood}. You can see it reflected on the page!\` },
         ],
       };
     }
-  );
+  });
 
-  window.mcp.registerTool(
-    'addTodo',
-    {
-      title: 'Add Todo',
-      description: 'Add a new item to my todo list',
-      inputSchema: {
-        item: z.string().describe('Todo item to add'),
-      },
+  navigator.modelContext.registerTool({
+    name: 'addTodo',
+    description: 'Add a new item to my todo list',
+    inputSchema: {
+      item: z.string().describe('Todo item to add'),
     },
-    async ({ item }) => {
-      showNotification(`Added todo: ${item}`);
+    async execute({ item }) {
+      showNotification(\`Added todo: \${item}\`);
       personalState.todoList.push(item);
       updatePersonalStatus();
       return {
         content: [
           {
             type: 'text',
-            text: `Added "${item}" to todo list. Total items: ${personalState.todoList.length}`,
+            text: \`Added "\${item}" to todo list. Total items: \${personalState.todoList.length}\`,
           },
         ],
       };
     }
-  );
+  });
 
-  window.mcp.registerTool(
-    'recordThought',
-    {
-      title: 'Record Thought',
-      description: 'Record my latest thought or insight',
-      inputSchema: {
-        thought: z.string().describe('Your current thought or insight'),
-      },
+  navigator.modelContext.registerTool({
+    name: 'recordThought',
+    description: 'Record my latest thought or insight',
+    inputSchema: {
+      thought: z.string().describe('Your current thought or insight'),
     },
-    async ({ thought }) => {
-      showNotification(`Recorded new thought`);
+    async execute({ thought }) {
+      showNotification(\`Recorded new thought\`);
       personalState.lastThought = thought;
       updatePersonalStatus();
       return {
-        content: [{ type: 'text', text: `Thought recorded: "${thought}"` }],
+        content: [{ type: 'text', text: \`Thought recorded: "\${thought}"\` }],
       };
     }
-  );
+  });
 
-  window.mcp.registerTool(
-    'setCurrentProject',
-    {
-      title: 'Set Current Project',
-      description: 'Update the current project I am working on',
-      inputSchema: {
-        project: z.string().describe('Name of the current project'),
-      },
+  navigator.modelContext.registerTool({
+    name: 'setCurrentProject',
+    description: 'Update the current project I am working on',
+    inputSchema: {
+      project: z.string().describe('Name of the current project'),
     },
-    async ({ project }) => {
-      showNotification(`Updated current project to: ${project}`);
+    async execute({ project }) {
+      showNotification(\`Updated current project to: \${project}\`);
       personalState.currentProject = project;
       updatePersonalStatus();
       return {
-        content: [{ type: 'text', text: `Current project updated to: ${project}` }],
+        content: [{ type: 'text', text: \`Current project updated to: \${project}\` }],
       };
     }
-  );
+  });
 
-  window.mcp.registerTool(
-    'changeFavoriteColor',
-    {
-      title: 'Change Favorite Color',
-      description: 'Change my favorite color and update the page theme',
-      inputSchema: {
-        color: z.string().describe('New favorite color in hex format (e.g., #ff5733)'),
-      },
+  navigator.modelContext.registerTool({
+    name: 'changeFavoriteColor',
+    description: 'Change my favorite color and update the page theme',
+    inputSchema: {
+      color: z.string().describe('New favorite color in hex format (e.g., #ff5733)'),
     },
-    async ({ color }) => {
-      showNotification(`Changed favorite color to: ${color}`);
+    async execute({ color }) {
+      showNotification(\`Changed favorite color to: \${color}\`);
       personalState.favoriteColor = color;
       document.documentElement.style.setProperty('--favorite-color', color);
       updatePersonalStatus();
       return {
-        content: [{ type: 'text', text: `Favorite color changed to: ${color}` }],
+        content: [{ type: 'text', text: \`Favorite color changed to: \${color}\` }],
       };
     }
-  );
+  });
 
-  window.mcp.registerTool(
-    'getMyStatus',
-    {
-      title: 'Get My Status',
-      description: 'Get a complete overview of my current status',
-    },
-    async () => {
-      showNotification(`Generated status report`, 'info');
+  navigator.modelContext.registerTool({
+    name: 'getMyStatus',
+    description: 'Get a complete overview of my current status',
+    inputSchema: {},
+    async execute() {
+      showNotification(\`Generated status report\`, 'info');
       return {
         content: [
           {
             type: 'text',
-            text: `Current Status Report:
-  🎭 Mood: ${personalState.mood}
-  🚀 Project: ${personalState.currentProject}
-  📋 Todos: ${personalState.todoList.length} items (${personalState.todoList.join(', ')})
-  🎨 Favorite Color: ${personalState.favoriteColor}
-  💭 Last Thought: "${personalState.lastThought}"
-  👀 Visits Today: ${personalState.visitCount}`,
+            text: \`Current Status Report:
+  🎭 Mood: \${personalState.mood}
+  🚀 Project: \${personalState.currentProject}
+  📋 Todos: \${personalState.todoList.length} items (\${personalState.todoList.join(', ')})
+  🎨 Favorite Color: \${personalState.favoriteColor}
+  💭 Last Thought: "\${personalState.lastThought}"
+  👀 Visits Today: \${personalState.visitCount}\`,
           },
         ],
       };
     }
-  );
+  });
 
   authState.toolsRegistered = true;
   console.log('MCP tools registered successfully!');

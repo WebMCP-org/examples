@@ -1,2 +1,11 @@
 node_modules/
 pnpm-lock.yaml
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
+# Root node_modules
+/node_modules/
+/package-lock.json

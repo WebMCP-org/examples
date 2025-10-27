@@ -1,12 +1,3 @@
-// Type declarations for window.mcp
-import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-
-declare global {
-  interface Window {
-    mcp: McpServer;
-  }
-}
-
 import { z } from 'zod';
 
 let counter = 0;
@@ -28,23 +19,20 @@ export async function setupCounter(element: HTMLButtonElement) {
   // Add click handler for the button
   element.addEventListener('click', () => setCounter(counter + 1));
 
-  // Wait for window.mcp to be available
-  if (!window.mcp) {
-    console.warn('window.mcp not available yet, waiting...');
+  // Wait for navigator.modelContext to be available
+  if (!navigator.modelContext) {
+    console.warn('navigator.modelContext not available yet, waiting...');
     await new Promise(resolve => setTimeout(resolve, 100));
   }
 
   // Register MCP tools using the global polyfill
-  window.mcp.registerTool(
-    'incrementCounter',
-    {
-      title: 'Increment Counter',
-      description: 'Increment the counter by a specified amount',
-      inputSchema: {
-        amount: z.number().optional().default(1).describe('Amount to increment by'),
-      },
+  navigator.modelContext.registerTool({
+    name: 'incrementCounter',
+    description: 'Increment the counter by a specified amount',
+    inputSchema: {
+      amount: z.number().optional().default(1).describe('Amount to increment by'),
     },
-    async ({ amount = 1 }) => {
+    async execute({ amount = 1 }) {
       const newCount = counter + amount;
       setCounter(newCount);
 
@@ -57,18 +45,15 @@ export async function setupCounter(element: HTMLButtonElement) {
         ],
       };
     }
-  );
+  });
 
-  window.mcp.registerTool(
-    'setCounter',
-    {
-      title: 'Set Counter',
-      description: 'Set the counter to a specific value',
-      inputSchema: {
-        value: z.string().describe('Value to set the counter to'),
-      },
+  navigator.modelContext.registerTool({
+    name: 'setCounter',
+    description: 'Set the counter to a specific value',
+    inputSchema: {
+      value: z.string().describe('Value to set the counter to'),
     },
-    async ({ value }) => {
+    async execute({ value }) {
       setCounter(parseInt(value));
 
       return {
@@ -80,15 +65,13 @@ export async function setupCounter(element: HTMLButtonElement) {
         ],
       };
     }
-  );
+  });
 
-  window.mcp.registerTool(
-    'getCounter',
-    {
-      title: 'Get Counter',
-      description: 'Get the current counter value',
-    },
-    async () => {
+  navigator.modelContext.registerTool({
+    name: 'getCounter',
+    description: 'Get the current counter value',
+    inputSchema: {},
+    async execute() {
       return {
         content: [
           {
@@ -98,7 +81,7 @@ export async function setupCounter(element: HTMLButtonElement) {
         ],
       };
     }
-  );
+  });
 
   console.log('MCP tools registered successfully!');
 }

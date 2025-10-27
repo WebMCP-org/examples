@@ -2,16 +2,7 @@
 // Just add one script tag and get AI superpowers!
 
 // The @mcp-b/global package is loaded via script tag in the HTML
-// This gives us window.mcp automatically when the page loads
-// types.ts
-
-import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-
-declare global {
-  interface Window {
-    mcp: McpServer;
-  }
-}
+// This polyfills navigator.modelContext automatically when the page loads
 
 import { z } from 'zod';
 
@@ -68,43 +59,35 @@ function deleteTodo(index: number) {
 // Wait for MCP then register tools
 function registerMCPTools() {
   // Add todo tool
-  const test = window.mcp.registerTool(
-    'addTodo',
-    {
-      title: 'Add Todo',
-      description: 'Add a new todo item',
-      inputSchema: { text: z.string().describe('Todo text to add') },
-    },
-    async ({ text }) => {
+  const test = navigator.modelContext.registerTool({
+    name: 'addTodo',
+    description: 'Add a new todo item',
+    inputSchema: { text: z.string().describe('Todo text to add') },
+    async execute({ text }) {
       showAIAction('Adding Todo', `"${text}"`);
       const result = addTodo(text);
       return { content: [{ type: 'text', text: result ? `✅ Added: "${result}"` : '❌ Failed' }] };
     }
-  );
+  });
   console.log('test', test);
 
   // Get todos tool
-  window.mcp.registerTool(
-    'getTodos',
-    {
-      title: 'Get Todos',
-      description: 'Get all current todos',
-    },
-    async () => {
+  navigator.modelContext.registerTool({
+    name: 'getTodos',
+    description: 'Get all current todos',
+    inputSchema: {},
+    async execute() {
       showAIAction('Getting Todos', `${todos.length} items`);
       return { content: [{ type: 'text', text: `📋 Todos: ${JSON.stringify(todos)}` }] };
     }
-  );
+  });
 
   // Delete todo tool
-  window.mcp.registerTool(
-    'deleteTodo',
-    {
-      title: 'Delete Todo',
-      description: 'Delete a todo by index (1-based)',
-      inputSchema: { index: z.number().describe('Todo number (1, 2, 3...)') },
-    },
-    async ({ index }) => {
+  navigator.modelContext.registerTool({
+    name: 'deleteTodo',
+    description: 'Delete a todo by index (1-based)',
+    inputSchema: { index: z.number().describe('Todo number (1, 2, 3...)') },
+    async execute({ index }) {
       const i = index - 1; // Convert to 0-based
       if (i >= 0 && i < todos.length) {
         const deleted = deleteTodo(i);
@@ -113,17 +96,14 @@ function registerMCPTools() {
       }
       return { content: [{ type: 'text', text: `❌ Todo ${index} not found` }] };
     }
-  );
+  });
 
   // Simple calculator
-  window.mcp.registerTool(
-    'calculate',
-    {
-      title: 'Calculator',
-      description: 'Do simple math calculations',
-      inputSchema: { expression: z.string().describe('Math expression like "2+2" or "15*23"') },
-    },
-    async ({ expression }) => {
+  navigator.modelContext.registerTool({
+    name: 'calculate',
+    description: 'Do simple math calculations',
+    inputSchema: { expression: z.string().describe('Math expression like "2+2" or "15*23"') },
+    async execute({ expression }) {
       showAIAction('Calculating', expression);
       try {
         const result = Function(`return ${expression}`)();
@@ -132,7 +112,7 @@ function registerMCPTools() {
         return { content: [{ type: 'text', text: `❌ Math error: ${e}` }] };
       }
     }
-  );
+  });
 
   // Status update
   const status = document.getElementById('status');
