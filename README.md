@@ -1,43 +1,75 @@
+<div align="center">
+
 # WebMCP Examples
 
-Modern example implementations demonstrating how to use **WebMCP** (Model Context Protocol for Browsers) with the latest simplified APIs.
+**Modern example implementations demonstrating Model Context Protocol for Browsers**
 
-## 🚀 Quick Start
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
+[![Node](https://img.shields.io/badge/node-18+-brightgreen.svg)](https://nodejs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.6-blue.svg)](https://www.typescriptlang.org)
 
-Each example is self-contained with its own dependencies. To run an example:
+[Quick Start](#quick-start) • [Examples](#examples) • [API Overview](#api-overview) • [Docs](#documentation)
+
+</div>
+
+---
+
+## What This Does
+
+WebMCP (Model Context Protocol for Browsers) enables AI assistants to interact with web applications through registered tools instead of screen automation. This repository provides production-ready examples using the modern WebMCP API.
+
+**Flow:**
+1. Web application registers tools using `navigator.modelContext.registerTool()`
+2. AI assistant discovers available tools through the MCP-B browser extension
+3. AI invokes tools to interact with the application
+4. Application updates in real-time based on AI commands
+
+This pattern works for any web application: e-commerce, task management, data visualization, configuration UIs, and more.
+
+## Quick Start
+
+### Run Existing Examples
 
 ```bash
+# Clone the repository
+git clone https://github.com/WebMCP-org/examples.git
+cd examples
+
+# Choose an example
 cd vanilla  # or react
+
+# Install and run
 pnpm install
 pnpm dev
 ```
 
-## ✨ Current Examples (New API)
+### Requirements
 
-These examples use the **modern WebMCP API** introduced in 2024 - simple, clean, and minimal boilerplate.
+- Node.js 18 or higher
+- pnpm package manager (or npm/yarn)
+- Chrome browser with [MCP-B extension](https://github.com/WebMCP-org/WebMCP)
 
-### 🟨 vanilla - Vanilla JavaScript/TypeScript Example
+## Examples
+
+### Vanilla JavaScript Example
 
 **Location:** `/vanilla`
 
-A shopping cart application demonstrating the core WebMCP API with vanilla TypeScript.
+A shopping cart application demonstrating core WebMCP functionality with vanilla TypeScript.
 
 **Features:**
-- Uses `navigator.modelContext.registerTool()` - the new simplified API
+- Uses `navigator.modelContext.registerTool()` - simplified API
 - JSON schema validation
 - Real-time UI updates
 - 5 AI-callable tools (add to cart, remove, get cart, clear, get total)
 
-**Key Technologies:**
-- `@mcp-b/global` - Core WebMCP library
-- Vite + TypeScript
-- Zero MCP SDK dependencies
+**Tech:** Vite, TypeScript, `@mcp-b/global`
 
-**Learn:** Perfect starting point for understanding WebMCP fundamentals.
+[→ Documentation](./vanilla/README.md)
 
 ---
 
-### ⚛️ react - React Hooks Example
+### React Example
 
 **Location:** `/react`
 
@@ -46,23 +78,37 @@ A task management application showcasing React integration with the `useWebMCP()
 **Features:**
 - Uses `useWebMCP()` hook from `@mcp-b/react-webmcp`
 - Zod schema validation with type safety
-- Automatic cleanup on unmount
+- Automatic cleanup on component unmount
 - 6 AI-callable tools (task CRUD operations + stats)
-- Beautiful responsive UI with real-time updates
+- Responsive UI with real-time updates
 
-**Key Technologies:**
-- `@mcp-b/react-webmcp` - React hooks for WebMCP
-- `@mcp-b/global` - Core library
-- Zod - Type-safe validation
-- React 18 + TypeScript + Vite
+**Tech:** React 18, TypeScript, Vite, Zod, `@mcp-b/react-webmcp`, `@mcp-b/global`
 
-**Learn:** How to integrate WebMCP with React applications using modern hooks.
+[→ Documentation](./react/README.md)
 
 ---
 
-## 🔧 API Overview
+### Legacy Examples (Deprecated)
+
+**Location:** `/relegated`
+
+These examples use the older MCP SDK API and are kept for reference only. Do not use these as starting points for new projects. They use the legacy `@modelcontextprotocol/sdk` with `McpServer` and `TabServerTransport`, requiring significantly more boilerplate.
+
+**Deprecated examples:**
+- `vanilla-ts` - Original TypeScript example
+- `login` - Authentication example
+- `script-tag` - Legacy implementation
+- `mcp-b-startup` - Complex React Flow workspace
+- `extension-connector` - Chrome extension
+- `reactFlowVoiceAgent` - Voice agent
+
+[→ Legacy Documentation](./relegated/README.md)
+
+## API Overview
 
 ### Vanilla JavaScript API
+
+The modern WebMCP API provides a simple way to register tools:
 
 ```typescript
 import '@mcp-b/global';
@@ -88,6 +134,8 @@ navigator.modelContext.registerTool({
 
 ### React Hooks API
 
+For React applications, use the `useWebMCP` hook for automatic lifecycle management:
+
 ```tsx
 import { useWebMCP } from '@mcp-b/react-webmcp';
 import { z } from 'zod';
@@ -109,9 +157,7 @@ function App() {
 }
 ```
 
----
-
-## 📦 Installation Methods
+### Installation Methods
 
 **For build-based projects (recommended):**
 
@@ -129,32 +175,12 @@ pnpm add @mcp-b/react-webmcp @mcp-b/global zod
 <script src="https://unpkg.com/@mcp-b/global@latest/dist/index.iife.js"></script>
 ```
 
----
+## Architecture
 
-## 📚 Legacy Examples (Deprecated)
+### API Comparison: New vs Legacy
 
-**Location:** `/relegated`
-
-These examples use the older MCP SDK API and are kept for reference only.
-
-**⚠️ Warning:** Do not use these as starting points for new projects. They use the legacy `@modelcontextprotocol/sdk` with `McpServer` and `TabServerTransport`, which requires significantly more boilerplate.
-
-**What's inside:**
-- `vanilla-ts` - Original TypeScript example
-- `login` - Authentication example
-- `script-tag` - Legacy implementation
-- `mcp-b-startup` - Complex React Flow workspace
-- `extension-connector` - Chrome extension
-- `reactFlowVoiceAgent` - Voice agent
-
-See `/relegated/README.md` for more details.
-
----
-
-## 🎯 Key Differences: New vs Old API
-
-| Feature | New API | Old API (Deprecated) |
-|---------|---------|---------------------|
+| Feature | Modern API | Legacy API (Deprecated) |
+|---------|-----------|------------------------|
 | **Installation** | `@mcp-b/global` or `@mcp-b/react-webmcp` | `@modelcontextprotocol/sdk` + `@mcp-b/transports` |
 | **Setup** | Single import | Server + Transport + Connection |
 | **Vanilla API** | `navigator.modelContext.registerTool()` | `new McpServer()` + complex setup |
@@ -164,17 +190,7 @@ See `/relegated/README.md` for more details.
 | **Boilerplate** | Minimal | Significant |
 | **Learning Curve** | Easy | Moderate to Hard |
 
----
-
-## 🛠️ Prerequisites
-
-- **Node.js** 18 or higher
-- **pnpm** package manager (or npm/yarn)
-- **Chrome browser** with [MCP-B extension](https://github.com/WebMCP-org/WebMCP)
-
----
-
-## 🤖 How It Works
+### How It Works
 
 1. Install the MCP-B browser extension
 2. Run one of the example projects (`pnpm dev`)
@@ -182,22 +198,45 @@ See `/relegated/README.md` for more details.
 4. Use AI (ChatGPT, Claude, etc.) to interact with your website's tools
 5. Watch the page update in real-time as AI calls your tools
 
-WebMCP enables AI assistants to interact with websites through **APIs instead of screen automation**, providing a more reliable and powerful integration.
+WebMCP enables AI assistants to interact with websites through APIs instead of screen automation, providing more reliable and powerful integration.
 
----
+## Commands
 
-## 📖 Documentation
+```bash
+# Development (per example)
+cd vanilla  # or react
+pnpm dev                    # Run development server
+pnpm build                  # Build for production
+pnpm preview                # Preview production build
+```
 
-- [WebMCP Documentation](https://docs.mcp-b.ai)
-- [Quickstart Guide](https://docs.mcp-b.ai/quickstart)
-- [Model Context Protocol](https://modelcontextprotocol.io/)
-- [Main Repository](https://github.com/WebMCP-org/WebMCP)
+## Documentation
 
----
+### Getting Started
+- [AGENTS.md](./AGENTS.md) - Navigation hub for AI agents
+- [CONTRIBUTING.md](./CONTRIBUTING.md) - Development standards and guidelines
+- [CHANGELOG.md](./CHANGELOG.md) - Version history and changes
 
-## 🤝 Contributing
+### Community
+- [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) - Community standards
 
-We welcome contributions! Whether it's a new example, bug fix, or documentation improvement, your help makes this project better.
+### Example Documentation
+- [Vanilla Example](./vanilla/README.md) - Vanilla JavaScript implementation
+- [React Example](./react/README.md) - React with hooks implementation
+- [Legacy Examples](./relegated/README.md) - Deprecated implementations
+
+## Tech Stack
+
+- **Package Manager:** pnpm
+- **Build Tool:** Vite 6
+- **Language:** TypeScript 5.6
+- **WebMCP Core:** @mcp-b/global
+- **React Integration:** @mcp-b/react-webmcp
+- **Validation:** JSON Schema, Zod
+
+## Contributing
+
+Fork, experiment, report issues, submit improvements.
 
 **Before contributing:**
 - Read [CONTRIBUTING.md](./CONTRIBUTING.md) for development standards and best practices
@@ -216,23 +255,45 @@ We welcome contributions! Whether it's a new example, bug fix, or documentation 
 4. Test thoroughly (typecheck, lint, build, manual testing)
 5. Submit a pull request
 
-See [CHANGELOG.md](./CHANGELOG.md) for version history and recent changes.
+## Resources
 
----
+### MCP-B (WebMCP / Bidirectional Tools)
 
-## 📚 Documentation
+**Documentation:**
+- [MCP-B Documentation](https://docs.mcp-b.ai/introduction) - Getting started with WebMCP
+- [Quick Start](https://docs.mcp-b.ai/quickstart) - Get WebMCP running in minutes
+- [Core Concepts](https://docs.mcp-b.ai/concepts) - Architecture and system design
+- [Examples](https://docs.mcp-b.ai/examples) - Ready-to-use implementations
 
-- **[AGENTS.md](./AGENTS.md)** - Navigation hub for AI agents
-- **[CONTRIBUTING.md](./CONTRIBUTING.md)** - Development standards and guidelines
-- **[CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)** - Community standards
-- **[CHANGELOG.md](./CHANGELOG.md)** - Version history and changes
+**NPM Packages:**
+- [`@mcp-b/react-webmcp`](https://www.npmjs.com/package/@mcp-b/react-webmcp) - React hooks for WebMCP ([docs](https://docs.mcp-b.ai/packages/react-webmcp))
+- [`@mcp-b/transports`](https://www.npmjs.com/package/@mcp-b/transports) - Transport layer implementations ([docs](https://docs.mcp-b.ai/packages/transports))
+- [`@mcp-b/core`](https://www.npmjs.com/package/@mcp-b/core) - Core WebMCP functionality ([docs](https://docs.mcp-b.ai/packages/core))
+- [`@mcp-b/global`](https://www.npmjs.com/package/@mcp-b/global) - Global WebMCP polyfill ([docs](https://docs.mcp-b.ai/packages/global))
+- [All Packages](https://github.com/WebMCP-org/npm-packages) - Complete package repository
 
----
+**Live Demos & Tools:**
+- [mcp-b.ai](https://mcp-b.ai) - Interactive examples
+- [MCP-B Chrome Extension](https://chromewebstore.google.com/detail/mcp-b/fkhbffeojcfadbkpldmbjlbfocgknjlj) - Test tools in your browser
 
-## 📄 License
+**Specification:**
+- [WebMCP Specification](https://github.com/webmachinelearning/webmcp) - W3C Web Machine Learning Community Group
+- [WebMCP Explainer](https://github.com/webmachinelearning/webmcp/blob/main/docs/explainer.md) - Technical proposal and API details
+
+### Model Context Protocol
+- [MCP Documentation](https://modelcontextprotocol.io/) - Official protocol documentation
+- [MCP Specification](https://spec.modelcontextprotocol.io/) - Technical specification
+- [MCP GitHub](https://github.com/modelcontextprotocol/modelcontextprotocol) - Specification repository
+
+### Development Tools
+- [TypeScript](https://www.typescriptlang.org/) - Type-safe JavaScript
+- [Vite](https://vite.dev/) - Next generation frontend tooling
+- [Zod](https://zod.dev/) - TypeScript-first schema validation
+
+## License
 
 MIT
 
 ---
 
-**Built with ❤️ by the WebMCP community**
+Built by the WebMCP community
