@@ -1,116 +1,35 @@
+/**
+ * Shopping cart application with WebMCP integration
+ *
+ * This application demonstrates the modern WebMCP API using vanilla TypeScript.
+ * All business logic is separated into pure functions in lib/ modules.
+ *
+ * @see https://docs.mcp-b.ai/packages/global
+ */
+
 import '@mcp-b/global';
 import './style.css';
-
-// Shopping cart state
-interface CartItem {
-  id: string;
-  name: string;
-  price: number;
-  quantity: number;
-}
+import type { CartItem } from './types';
+import {
+  addItemToCart,
+  removeItemFromCart,
+  calculateItemCount,
+  formatCartSummary,
+} from './lib/cart';
+import { renderCartUI, showNotification, initializeApp } from './lib/ui';
 
 let cart: CartItem[] = [];
 
-// UI Functions
-function updateCartUI() {
-  const cartList = document.getElementById('cart-list');
-  const cartTotal = document.getElementById('cart-total');
-  const cartCount = document.getElementById('cart-count');
-
-  if (!cartList || !cartTotal || !cartCount) return;
-
-  if (cart.length === 0) {
-    cartList.innerHTML = '<p class="empty-cart">Your cart is empty</p>';
-    cartTotal.textContent = '0.00';
-    cartCount.textContent = '0';
-    return;
-  }
-
-  cartList.innerHTML = cart
-    .map(
-      (item) => `
-      <div class="cart-item">
-        <div class="item-info">
-          <strong>${item.name}</strong>
-          <span class="item-price">$${item.price.toFixed(2)} × ${item.quantity}</span>
-        </div>
-        <div class="item-total">$${(item.price * item.quantity).toFixed(2)}</div>
-      </div>
-    `
-    )
-    .join('');
-
-  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
-
-  cartTotal.textContent = total.toFixed(2);
-  cartCount.textContent = itemCount.toString();
+const appElement = document.querySelector<HTMLDivElement>('#app');
+if (appElement) {
+  initializeApp(appElement);
 }
 
-function showNotification(message: string, type: 'success' | 'error' = 'success') {
-  const notification = document.createElement('div');
-  notification.className = `notification ${type}`;
-  notification.textContent = message;
-  document.body.appendChild(notification);
-
-  setTimeout(() => notification.classList.add('show'), 10);
-  setTimeout(() => {
-    notification.classList.remove('show');
-    setTimeout(() => notification.remove(), 300);
-  }, 3000);
-}
-
-// Initialize UI
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-  <div class="container">
-    <header>
-      <h1>🛒 Smart Shopping Cart</h1>
-      <p class="subtitle">AI-powered shopping with WebMCP</p>
-    </header>
-
-    <div class="content">
-      <section class="info-card">
-        <h2>🤖 How This Works</h2>
-        <p>This demo uses the <strong>new WebMCP API</strong>:</p>
-        <ul>
-          <li>Install the MCP-B browser extension</li>
-          <li>Open the extension to see available tools</li>
-          <li>Ask AI to add items, clear cart, or get totals</li>
-          <li>Watch the page update in real-time!</li>
-        </ul>
-      </section>
-
-      <section class="tools-card">
-        <h2>🛠️ Available Tools</h2>
-        <ul>
-          <li><code>add_to_cart</code> - Add items to your cart</li>
-          <li><code>remove_from_cart</code> - Remove items by ID</li>
-          <li><code>get_cart</code> - View current cart contents</li>
-          <li><code>clear_cart</code> - Empty the entire cart</li>
-          <li><code>get_cart_total</code> - Get the total price</li>
-        </ul>
-      </section>
-
-      <section class="cart-card">
-        <h2>🛍️ Your Cart <span class="badge" id="cart-count">0</span></h2>
-        <div id="cart-list">
-          <p class="empty-cart">Your cart is empty</p>
-        </div>
-        <div class="cart-footer">
-          <strong>Total:</strong>
-          <span class="total">$<span id="cart-total">0.00</span></span>
-        </div>
-      </section>
-    </div>
-
-    <footer>
-      <p>Built with <a href="https://docs.mcp-b.ai" target="_blank">WebMCP</a> • Modern API • Zero MCP SDK Boilerplate</p>
-    </footer>
-  </div>
-`;
-
-// Register WebMCP Tools using the new API
-// Tool 1: Add to Cart
+/**
+ * WebMCP Tool: Add to Cart
+ *
+ * Adds a product to the shopping cart or updates quantity if it exists
+ */
 navigator.modelContext.registerTool({
   name: 'add_to_cart',
   description: 'Add a product to the shopping cart',
@@ -138,32 +57,40 @@ navigator.modelContext.registerTool({
   },
   async execute(args) {
     const { productId, name, price, quantity = 1 } = args;
-
-    // Check if item already exists
     const existingItem = cart.find((item) => item.id === productId);
 
+    cart = addItemToCart(cart, { id: productId, name, price, quantity });
+
     if (existingItem) {
-      existingItem.quantity += quantity;
-      showNotification(`Updated ${name} quantity to ${existingItem.quantity}`, 'success');
+      const updatedItem = cart.find((item) => item.id === productId);
+      showNotification(
+        `Updated ${name} quantity to ${updatedItem?.quantity}`,
+        'success'
+      );
     } else {
-      cart.push({ id: productId, name, price, quantity });
       showNotification(`Added ${name} to cart`, 'success');
     }
 
-    updateCartUI();
+    renderCartUI(cart);
 
     return {
       content: [
         {
           type: 'text',
-          text: `Successfully added ${quantity}x ${name} ($${price.toFixed(2)}) to cart. Total items: ${cart.reduce((sum, item) => sum + item.quantity, 0)}`,
+          text: `Successfully added ${quantity}x ${name} ($${price.toFixed(
+            2
+          )}) to cart. Total items: ${calculateItemCount(cart)}`,
         },
       ],
     };
   },
 });
 
-// Tool 2: Remove from Cart
+/**
+ * WebMCP Tool: Remove from Cart
+ *
+ * Removes a product from the shopping cart by ID
+ */
 navigator.modelContext.registerTool({
   name: 'remove_from_cart',
   description: 'Remove a product from the shopping cart',
@@ -179,18 +106,18 @@ navigator.modelContext.registerTool({
   },
   async execute(args) {
     const { productId } = args;
-    const itemIndex = cart.findIndex((item) => item.id === productId);
+    const [updatedCart, removedItem] = removeItemFromCart(cart, productId);
 
-    if (itemIndex === -1) {
+    if (!removedItem) {
       showNotification('Product not found in cart', 'error');
       return {
         content: [{ type: 'text', text: `Product ${productId} not found in cart` }],
       };
     }
 
-    const removedItem = cart.splice(itemIndex, 1)[0];
+    cart = updatedCart;
     showNotification(`Removed ${removedItem.name} from cart`, 'success');
-    updateCartUI();
+    renderCartUI(cart);
 
     return {
       content: [{ type: 'text', text: `Removed ${removedItem.name} from cart` }],
@@ -198,7 +125,11 @@ navigator.modelContext.registerTool({
   },
 });
 
-// Tool 3: Get Cart
+/**
+ * WebMCP Tool: Get Cart
+ *
+ * Returns the current shopping cart contents in a formatted string
+ */
 navigator.modelContext.registerTool({
   name: 'get_cart',
   description: 'Get the current shopping cart contents',
@@ -207,30 +138,22 @@ navigator.modelContext.registerTool({
     properties: {},
   },
   async execute() {
-    if (cart.length === 0) {
-      return {
-        content: [{ type: 'text', text: 'Cart is empty' }],
-      };
-    }
-
-    const cartSummary = cart
-      .map((item) => `- ${item.name}: $${item.price.toFixed(2)} × ${item.quantity} = $${(item.price * item.quantity).toFixed(2)}`)
-      .join('\n');
-
-    const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-
     return {
       content: [
         {
           type: 'text',
-          text: `Shopping Cart:\n${cartSummary}\n\nTotal: $${total.toFixed(2)}`,
+          text: formatCartSummary(cart),
         },
       ],
     };
   },
 });
 
-// Tool 4: Clear Cart
+/**
+ * WebMCP Tool: Clear Cart
+ *
+ * Removes all items from the shopping cart
+ */
 navigator.modelContext.registerTool({
   name: 'clear_cart',
   description: 'Remove all items from the shopping cart',
@@ -241,7 +164,7 @@ navigator.modelContext.registerTool({
   async execute() {
     const itemCount = cart.length;
     cart = [];
-    updateCartUI();
+    renderCartUI(cart);
     showNotification('Cart cleared', 'success');
 
     return {
@@ -250,7 +173,11 @@ navigator.modelContext.registerTool({
   },
 });
 
-// Tool 5: Get Cart Total
+/**
+ * WebMCP Tool: Get Cart Total
+ *
+ * Returns the total price and item count for the current cart
+ */
 navigator.modelContext.registerTool({
   name: 'get_cart_total',
   description: 'Get the total price of all items in the cart',
@@ -260,7 +187,7 @@ navigator.modelContext.registerTool({
   },
   async execute() {
     const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+    const itemCount = calculateItemCount(cart);
 
     return {
       content: [
@@ -274,4 +201,6 @@ navigator.modelContext.registerTool({
 });
 
 console.log('✅ WebMCP tools registered successfully!');
-console.log('🔧 Available tools: add_to_cart, remove_from_cart, get_cart, clear_cart, get_cart_total');
+console.log(
+  '🔧 Available tools: add_to_cart, remove_from_cart, get_cart, clear_cart, get_cart_total'
+);

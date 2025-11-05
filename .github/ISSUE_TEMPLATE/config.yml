@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: WebMCP Documentation
+    url: https://docs.mcp-b.ai
+    about: Check the WebMCP documentation for guides and API reference
+  - name: MCP Protocol Documentation
+    url: https://modelcontextprotocol.io/
+    about: Learn about the Model Context Protocol specification

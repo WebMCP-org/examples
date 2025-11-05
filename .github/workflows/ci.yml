@@ -1,0 +1,87 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+env:
+  CI: true
+
+jobs:
+  lint-and-typecheck:
+    name: Lint & Typecheck
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        example: [vanilla, react]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.0.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+          cache-dependency-path: '${{ matrix.example }}/pnpm-lock.yaml'
+
+      - name: Install dependencies
+        working-directory: ${{ matrix.example }}
+        run: pnpm install
+
+      - name: Run linting
+        working-directory: ${{ matrix.example }}
+        run: pnpm lint
+
+      - name: Run typecheck
+        working-directory: ${{ matrix.example }}
+        run: pnpm typecheck
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: lint-and-typecheck
+    strategy:
+      matrix:
+        example: [vanilla, react]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.0.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+          cache-dependency-path: '${{ matrix.example }}/pnpm-lock.yaml'
+
+      - name: Install dependencies
+        working-directory: ${{ matrix.example }}
+        run: pnpm install
+
+      - name: Build
+        working-directory: ${{ matrix.example }}
+        run: pnpm build
+
+      - name: Check build output
+        working-directory: ${{ matrix.example }}
+        run: |
+          if [ ! -d "dist" ]; then
+            echo "Error: dist directory not created"
+            exit 1
+          fi
+          echo "Build successful for ${{ matrix.example }}"

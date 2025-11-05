@@ -197,7 +197,35 @@ WebMCP enables AI assistants to interact with websites through **APIs instead of
 
 ## 🤝 Contributing
 
-These examples are part of the WebMCP project. Contributions are welcome!
+We welcome contributions! Whether it's a new example, bug fix, or documentation improvement, your help makes this project better.
+
+**Before contributing:**
+- Read [CONTRIBUTING.md](./CONTRIBUTING.md) for development standards and best practices
+- Check [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) for community guidelines
+- Review existing examples to understand patterns
+
+**For AI Agents:**
+- Start with [AGENTS.md](./AGENTS.md) for quick navigation
+- Follow TypeScript strict mode and modern WebMCP API patterns
+- Test all changes with the MCP-B Chrome Extension
+
+**Quick contribution steps:**
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes following [CONTRIBUTING.md](./CONTRIBUTING.md)
+4. Test thoroughly (typecheck, lint, build, manual testing)
+5. Submit a pull request
+
+See [CHANGELOG.md](./CHANGELOG.md) for version history and recent changes.
+
+---
+
+## 📚 Documentation
+
+- **[AGENTS.md](./AGENTS.md)** - Navigation hub for AI agents
+- **[CONTRIBUTING.md](./CONTRIBUTING.md)** - Development standards and guidelines
+- **[CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)** - Community standards
+- **[CHANGELOG.md](./CHANGELOG.md)** - Version history and changes
 
 ---
 
