@@ -1,8 +1,15 @@
-# Contributing to WebMCP Examples
+# Contributing Guide for AI Agents
 
-Thank you for your interest in contributing to the WebMCP Examples repository! This guide outlines development standards and best practices.
+This guide outlines the development standards and best practices for AI assistants contributing to this codebase. Our philosophy prioritizes type safety, single source of truth, modularity, and clean, self-documenting code.
 
 ## Core Principles
+
+### 0. Adhere to the principles of working with legacy codebases
+
+* Deeply investigate and understand existing code before making changes.
+* Adhere to existing coding styles and patterns.
+* Minimize changes to working code; prioritize stability.
+* Read documentation, check that it is accurate, and update it if it is not
 
 ### 1. Type Safety First
 
@@ -31,9 +38,11 @@ function addTask(task: any) {
 **Guidelines:**
 - Never use `any` - use `unknown` if type is truly unknown, then narrow it
 - Prefer union types over enums for string constants
-- Use strict TypeScript settings
+- Use strict TypeScript settings (already configured in tsconfig files)
 - Leverage type inference but annotate function signatures
-- Use Zod for runtime validation with WebMCP schemas
+- Use Zod for runtime validation (already used in WebMCP tool schemas)
+
+**Verify types:** Run `pnpm typecheck` before committing.
 
 ### 2. Single Source of Truth
 
@@ -42,28 +51,87 @@ function addTask(task: any) {
 ✅ **Good:**
 ```typescript
 /**
- * WebMCP tool registration
- * See: https://docs.mcp-b.ai/packages/react-webmcp
+ * WebMCP tool names
+ * See: src/main.ts for tool implementations
  */
-export const TOOLS = ['add_to_cart', 'remove_from_cart'] as const;
+export const TOOL_NAMES = ['add_to_cart', 'remove_from_cart'] as const;
 ```
 
 ❌ **Bad:**
 ```typescript
-// Duplicating tool definitions that exist elsewhere
-export const TOOLS = ['add_to_cart', 'remove_from_cart'];
+// Duplicating tool list that already exists in main.ts
+export const TOOL_NAMES = ['add_to_cart', 'remove_from_cart'];
 ```
 
-### 3. Clean, Self-Documenting Code
+**Guidelines:**
+- Configuration lives in one place (e.g., `vite.config.ts`)
+- Constants are exported from a single module and imported elsewhere
+- Types are defined once and shared via imports
+- Documentation references other docs rather than duplicating content
 
-**Code should be self-documenting. Use JSDoc for public APIs.**
+**This applies to documentation too:**
+- README.md has the example overview
+- AGENTS.md links to other documentation (not duplicating it)
+- Package-specific docs stay in their directories
+
+### 3. Modularity
+
+**Write small, focused, reusable modules with clear boundaries.**
+
+✅ **Good:**
+```typescript
+// src/lib/cart.ts - Pure cart logic
+export function calculateTotal(items: CartItem[]): number {
+  return items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+}
+
+// src/App.tsx - UI component
+import { calculateTotal } from './lib/cart';
+
+export function App() {
+  const total = calculateTotal(cartItems);
+  // Render UI
+}
+```
+
+❌ **Bad:**
+```typescript
+// Everything in one file
+export function App() {
+  // Cart logic mixed with UI
+  const calculateTotal = () => { /* ... */ };
+  // Render UI
+}
+```
+
+**Guidelines:**
+- One responsibility per file/function
+- Separate concerns: logic, UI, types
+- Components should be composable and testable
+- Pure functions for business logic
+- Side effects isolated to specific modules
+
+**Recommended file organization:**
+```
+src/
+├── lib/              # Pure utility functions
+├── types/            # Shared TypeScript types
+├── components/       # React components (React examples only)
+├── App.tsx          # Main app component
+└── main.tsx         # Entry point
+```
+
+### 4. Code Cleanliness
+
+**Code should be self-documenting. Use JSDoc for public APIs, not inline comments.**
 
 ✅ **Good:**
 ```typescript
 /**
  * Register a WebMCP tool that adds items to the shopping cart
  *
- * @param item - Product to add to cart
+ * @param productId - Unique identifier for the product
+ * @param quantity - Number of items to add (must be positive)
  * @returns Tool result with updated cart state
  *
  * @example
@@ -71,75 +139,124 @@ export const TOOLS = ['add_to_cart', 'remove_from_cart'];
  * useWebMCP({
  *   name: "add_to_cart",
  *   description: "Add item to shopping cart",
- *   inputSchema: { productId: z.string() },
- *   handler: async ({ productId }) => ({ success: true })
+ *   inputSchema: {
+ *     productId: z.string(),
+ *     quantity: z.number().positive()
+ *   },
+ *   handler: async ({ productId, quantity }) => ({ success: true })
  * });
  * ```
  */
+export function addToCart(productId: string, quantity: number) {
+  // Implementation
+}
 ```
 
-## Project Structure
+❌ **Bad:**
+```typescript
+export function addToCart(productId: string, quantity: number) {
+  // First we check if the product exists
+  const product = products.find(p => p.id === productId);
 
-Each example should be self-contained:
+  // Then we add it to the cart
+  cart.push({ product, quantity });
 
-```
-examples/
-├── vanilla/          # Vanilla TypeScript examples
-│   ├── src/
-│   ├── package.json
-│   └── README.md
-├── react/            # React + TypeScript examples
-│   ├── src/
-│   ├── package.json
-│   └── README.md
-└── relegated/        # Legacy examples (deprecated)
+  // Finally we save the cart
+  saveCart(cart);
+}
 ```
 
-## Adding New Examples
+**Guidelines:**
+- Write clear function/variable names instead of comments
+- Use JSDoc for all exported functions, classes, and types
+- Include `@param`, `@returns`, and `@example` in JSDoc
+- No inline comments explaining "what" - code should be clear
+- Only use inline comments for "why" if truly necessary (rare)
+- Keep functions small and focused (easier to understand without comments)
+
+**JSDoc best practices:**
+- Document the interface, not the implementation
+- Include examples for complex APIs
+- Link to related documentation: `@see src/main.ts`
+- Keep it concise but complete
+
+## Practical Guidelines
+
+### Adding New Examples
 
 **Before creating a new example:**
-
 1. Check if it fits better as an enhancement to an existing example
 2. Ensure it demonstrates a unique WebMCP use case
 3. Review existing patterns in `/vanilla` and `/react` directories
+4. Identify where types, logic, and UI should live
 
 **When creating a new example:**
+1. Define TypeScript types/interfaces first
+2. Write pure logic functions (testable)
+3. Create UI components that use the logic
+4. Add JSDoc to public APIs
+5. Create comprehensive README.md
+6. Use the modern WebMCP API (`@mcp-b/global` or `@mcp-b/react-webmcp`)
+7. Never use deprecated APIs from `/relegated`
 
-1. Create a dedicated directory under the appropriate category
-2. Include a comprehensive README.md explaining:
-   - What the example demonstrates
-   - How to run it
-   - Key WebMCP concepts used
-   - Prerequisites
-3. Use the modern WebMCP API (`@mcp-b/global` or `@mcp-b/react-webmcp`)
-4. Never use deprecated APIs from `/relegated`
-5. Include clear comments explaining WebMCP-specific code
-6. Add JSDoc to all exported functions and components
-
-**Example structure:**
-```
-new-example/
-├── README.md           # What it does, how to run
-├── package.json        # Dependencies
-├── vite.config.ts      # Build configuration
-├── tsconfig.json       # TypeScript config
-├── index.html          # Entry point (for Vite)
-└── src/
-    ├── main.ts(x)      # Application entry
-    └── ...             # Other source files
+**After creating the example:**
+```bash
+cd your-example
+pnpm typecheck  # Verify types
+pnpm lint       # Check code quality
+pnpm build      # Ensure builds succeed
 ```
 
-## Code Style
+### Modifying Existing Examples
 
-### WebMCP Tool Registration
+**Follow the existing patterns:**
+- If file uses named exports, continue using named exports
+- If types are in a separate file, add new types there
+- Match the JSDoc style of the module
+- Maintain the same level of abstraction
 
-**Vanilla JavaScript/TypeScript:**
+**Don't refactor unnecessarily:**
+- If code works and follows these principles, leave it
+- Only refactor if fixing a bug or adding a feature
+- Refactoring should improve clarity, not just change style
+
+### Documentation Updates
+
+**When documentation needs updating:**
+- Update the canonical source (e.g., example's README.md)
+- AGENTS.md should only link, never duplicate
+- Keep documentation close to code when possible
+- Update CHANGELOG.md for significant changes
+
+## Code Review Checklist
+
+Before submitting changes, verify:
+
+- [ ] **Type safety**: No `any`, all types are explicit
+- [ ] **No duplication**: Information lives in one place
+- [ ] **Modularity**: Functions/components have single responsibility
+- [ ] **Clean code**: JSDoc on public APIs, no inline comments explaining "what"
+- [ ] **Lint & typecheck pass**: `pnpm typecheck` and `pnpm lint` succeed with no errors
+- [ ] **Build succeeds**: `pnpm build` completes without errors
+- [ ] **Tested with MCP-B extension**: All tools register and work correctly
+- [ ] **Documentation updated**: README and inline docs are current
+- [ ] **Follows patterns**: Matches existing code style and structure
+- [ ] **Modern API**: Uses `@mcp-b/global` or `@mcp-b/react-webmcp`, NOT deprecated packages
+
+## Common Patterns
+
+### WebMCP Tool Registration - Vanilla
+
 ```typescript
+/**
+ * Register a tool with WebMCP
+ * Tool executes pure business logic from lib/ modules
+ */
 import '@mcp-b/global';
 
 navigator.modelContext.registerTool({
-  name: 'my_tool',
-  description: 'Clear description of what this does',
+  name: 'tool_name',
+  description: 'Clear description of what this tool does',
   inputSchema: {
     type: 'object',
     properties: {
@@ -148,44 +265,84 @@ navigator.modelContext.registerTool({
     required: ['param']
   },
   async execute(args) {
-    // Your logic here
+    // Call pure functions from lib/
+    const result = await processData(args.param);
     return {
-      content: [{ type: 'text', text: 'Result' }]
+      content: [{ type: 'text', text: result }]
     };
   }
 });
 ```
 
-**React with Hooks:**
-```tsx
+### WebMCP Hook Usage - React
+
+```typescript
+/**
+ * Register a tool that can be called by the AI
+ * The tool is automatically unregistered when component unmounts
+ */
 import { useWebMCP } from '@mcp-b/react-webmcp';
 import { z } from 'zod';
 
 function App() {
+  const [state, setState] = useState<State>(initialState);
+
   useWebMCP({
-    name: 'my_tool',
-    description: 'Clear description of what this does',
+    name: "tool_name",
+    description: "What the tool does",
     inputSchema: {
       param: z.string().describe('Parameter description')
     },
     handler: async ({ param }) => {
       // Type-safe params from Zod schema
-      // Can access React state here
+      // Can access and modify React state
+      setState(prev => updateState(prev, param));
       return { success: true, result: 'Done!' };
     }
   });
 
-  return <div>Your UI</div>;
+  return <div>{/* UI */}</div>;
+}
+```
+
+### React Component Structure
+
+```typescript
+/**
+ * Task manager component with WebMCP integration
+ * Manages task state and registers MCP tools for AI interaction
+ */
+export function TaskManager() {
+  // State
+  const [tasks, setTasks] = useState<Task[]>([]);
+
+  // Logic (can be extracted to lib/ if complex)
+  const completedCount = tasks.filter(t => t.completed).length;
+
+  // WebMCP integration
+  useWebMCP({
+    name: 'add_task',
+    handler: async ({ title }) => {
+      const newTask = { id: crypto.randomUUID(), title, completed: false };
+      setTasks(prev => [...prev, newTask]);
+      return { success: true, taskId: newTask.id };
+    }
+  });
+
+  // Render
+  return <div>{/* UI */}</div>;
 }
 ```
 
 ### Error Handling
 
-Always handle errors gracefully in WebMCP tools:
-
 ```typescript
+/**
+ * Handle tool execution errors gracefully
+ * Always return valid response even on error
+ */
 useWebMCP({
-  name: 'my_tool',
+  name: 'risky_operation',
   handler: async (params) => {
     try {
       const result = await performOperation(params);
@@ -199,6 +356,31 @@ useWebMCP({
     }
   }
 });
+```
+
+### Type Definitions
+
+```typescript
+/**
+ * Define types once, import everywhere
+ * Keep types close to their usage
+ */
+
+// src/types/cart.ts
+export interface CartItem {
+  productId: string;
+  name: string;
+  price: number;
+  quantity: number;
+}
+
+export type CartAction =
+  | { type: 'ADD_ITEM'; item: CartItem }
+  | { type: 'REMOVE_ITEM'; productId: string }
+  | { type: 'CLEAR_CART' };
+
+// Import in other files
+import type { CartItem, CartAction } from './types/cart';
 ```
 
 ## Development Workflow
@@ -220,98 +402,52 @@ pnpm install
 pnpm dev
 ```
 
-### Before Submitting Changes
-
-```bash
-# Type-check your code
-pnpm typecheck
-
-# Lint your code
-pnpm lint
-
-# Build to ensure no errors
-pnpm build
-```
-
 ### Testing
 
-Manual testing is required:
+Manual testing with MCP-B extension is required:
+
 1. Install the [MCP-B Chrome Extension](https://chromewebstore.google.com/detail/mcp-b/fkhbffeojcfadbkpldmbjlbfocgknjlj)
 2. Run your example (`pnpm dev`)
 3. Open the extension and verify tools are registered
 4. Test each tool through the AI interface
 5. Verify UI updates correctly
-6. Test error cases
+6. Test error cases (invalid inputs, network errors, etc.)
 
-## Documentation
-
-### README Requirements
-
-Each example must have a README.md with:
-
-1. **Title and description** - What it demonstrates
-2. **Features** - Key capabilities shown
-3. **Prerequisites** - Required tools/extensions
-4. **Installation** - How to install dependencies
-5. **Usage** - How to run and use the example
-6. **WebMCP Integration** - Explanation of WebMCP usage
-7. **Key Files** - Brief overview of important files
-8. **Learn More** - Links to relevant documentation
-
-### Code Comments
-
-- Use JSDoc for all exported functions, types, and components
-- Include `@param`, `@returns`, and `@example` tags
-- Add inline comments only for complex logic that needs explanation
-- Keep comments concise and up-to-date
-
-## Pull Request Process
+### Pull Request Process
 
 1. **Fork the repository** and create a branch from `main`
 2. **Make your changes** following the guidelines above
 3. **Test thoroughly** using the MCP-B extension
 4. **Update documentation** if you're changing functionality
 5. **Run quality checks**: `pnpm typecheck && pnpm lint && pnpm build`
-6. **Submit a pull request** with:
-   - Clear description of changes
-   - Why the change is needed
-   - How to test it
-   - Screenshots/demos if applicable
+6. **Submit a pull request** using the PR template
 
-## Common Patterns
+## Example Structure
 
-### State Management in React Examples
+Each example should follow this structure:
 
-```tsx
-function App() {
-  const [items, setItems] = useState<Item[]>([]);
-
-  // Register tools that modify state
-  useWebMCP({
-    name: 'add_item',
-    handler: async ({ item }) => {
-      setItems(prev => [...prev, item]);
-      return { success: true, count: items.length + 1 };
-    }
-  });
-
-  return <ItemList items={items} />;
-}
+```
+example-name/
+├── README.md           # What it demonstrates, how to run
+├── package.json        # Dependencies (@mcp-b/* packages)
+├── vite.config.ts      # Vite configuration
+├── tsconfig.json       # TypeScript config (strict mode)
+├── index.html          # HTML entry point
+└── src/
+    ├── main.tsx        # Application entry point
+    ├── App.tsx         # Main app component
+    ├── types/          # TypeScript type definitions
+    │   └── index.ts
+    └── lib/            # Pure utility functions (optional)
+        └── utils.ts
 ```
 
-### JSON Schema vs Zod
-
-- **Vanilla examples**: Use JSON Schema for `inputSchema`
-- **React examples**: Use Zod for type-safe validation
-- Always include descriptions for all parameters
-
-### Tool Naming
-
-- Use lowercase with underscores: `add_to_cart`, not `addToCart`
-- Be descriptive: `get_cart_total`, not `get_total`
-- Follow MCP naming conventions
-
 ## Resources
+
+### Primary Documentation
+- [README.md](./README.md) - Repository overview
+- [AGENTS.md](./AGENTS.md) - Navigation hub for AI agents
+- [CHANGELOG.md](./CHANGELOG.md) - Version history
 
 ### WebMCP Documentation
 - [WebMCP Documentation](https://docs.mcp-b.ai)
@@ -319,28 +455,20 @@ function App() {
 - [React WebMCP Package](https://docs.mcp-b.ai/packages/react-webmcp)
 - [Core Package](https://docs.mcp-b.ai/packages/core)
 
-### MCP Resources
-- [Model Context Protocol](https://modelcontextprotocol.io/)
-- [MCP Specification](https://spec.modelcontextprotocol.io/)
-
-### TypeScript
+### External Resources
 - [TypeScript Handbook](https://www.typescriptlang.org/docs/)
 - [React TypeScript Cheatsheet](https://react-typescript-cheatsheet.netlify.app/)
+- [MCP Specification](https://spec.modelcontextprotocol.io/)
+- [Zod Documentation](https://zod.dev/)
 
-## Getting Help
+## Questions?
 
-- **Documentation**: Check [docs.mcp-b.ai](https://docs.mcp-b.ai)
-- **Issues**: Open a GitHub issue with the bug/feature template
-- **Discussions**: Use GitHub Discussions for questions
-
-## Code of Conduct
-
-Please read our [Code of Conduct](./CODE_OF_CONDUCT.md) before contributing.
-
-## License
-
-By contributing, you agree that your contributions will be licensed under the MIT License.
+If you're unsure about a pattern or approach:
+1. Check existing examples for similar patterns
+2. Review the [vanilla](./vanilla/) or [react](./react/) examples
+3. Check [WebMCP documentation](https://docs.mcp-b.ai)
+4. When in doubt, prioritize clarity and type safety
 
 ---
 
-**Thank you for contributing to WebMCP Examples!** Your contributions help the community learn and build better AI-integrated applications.
+**Remember**: These principles exist to make the examples clear, maintainable, and educational. When followed consistently, they help developers learn WebMCP best practices.
