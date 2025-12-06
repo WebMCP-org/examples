@@ -30,6 +30,14 @@ Welcome! This document helps you navigate the WebMCP Examples repository efficie
 - **Key file**: `rails/app/javascript/controllers/bookmarks_webmcp_controller.ts` - Stimulus controller with WebMCP tools
 - **API used**: `navigator.modelContext.registerTool()` in Stimulus
 
+#### Phoenix LiveView (Elixir)
+- **[phoenix-liveview/README.md](./phoenix-liveview/README.md)** - Counter + items with server-side state
+- **Location**: `/phoenix-liveview`
+- **Key files**:
+  - `lib/webmcp_demo_web/live/counter_live.ex` - LiveView with state management
+  - `assets/js/app.js` - WebMCP hook registration
+- **API used**: `navigator.modelContext.registerTool()` via LiveView hooks
+
 ### Legacy Examples (Deprecated - DO NOT USE)
 - **[relegated/README.md](./relegated/README.md)** - Old examples using deprecated MCP SDK
 - **Warning**: These use the legacy `@modelcontextprotocol/sdk` API
@@ -46,13 +54,17 @@ Welcome! This document helps you navigate the WebMCP Examples repository efficie
 
 ```bash
 # Navigate to the example
-cd vanilla  # or react, rails
+cd vanilla  # or react, rails, phoenix-liveview
 
 # Install dependencies
-pnpm install
+pnpm install  # For JS examples
+# OR
+mix setup     # For Phoenix example
 
 # Start development server
-pnpm dev
+pnpm dev      # For JS examples
+# OR
+mix phx.server  # For Phoenix example
 ```
 
 ### Adding a New Example
@@ -164,6 +176,12 @@ example-name/
 - Controller: `rails/app/javascript/controllers/bookmarks_webmcp_controller.ts`
 - Config: `rails/vite.config.ts`
 
+**Phoenix LiveView Example:**
+- Entry: `phoenix-liveview/lib/webmcp_demo/application.ex`
+- LiveView: `phoenix-liveview/lib/webmcp_demo_web/live/counter_live.ex`
+- WebMCP Hook: `phoenix-liveview/assets/js/app.js`
+- Config: `phoenix-liveview/config/config.exs`
+
 ## WebMCP Package Documentation
 
 - **[@mcp-b/global](https://docs.mcp-b.ai/packages/global)** - Core WebMCP polyfill for vanilla JS
@@ -190,7 +208,8 @@ example-name/
 ## Prerequisites
 
 - **Node.js**: 18 or higher (see `.nvmrc`)
-- **pnpm**: Package manager
+- **pnpm**: Package manager (for JS examples)
+- **Elixir**: 1.14+ (for Phoenix example)
 - **MCP-B Extension**: Chrome extension for testing WebMCP tools
 - **Browser**: Chrome or Chromium-based browser
 
