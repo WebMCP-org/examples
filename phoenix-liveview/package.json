@@ -1,0 +1,14 @@
+{
+  "name": "phoenix-liveview-webmcp-example",
+  "version": "1.0.0",
+  "description": "Phoenix LiveView example using the modern WebMCP API",
+  "type": "module",
+  "scripts": {
+    "dev": "cd assets && npm install && cd .. && mix setup && mix phx.server",
+    "build": "mix assets.deploy",
+    "typecheck": "echo 'Elixir uses dialyzer for type checking'",
+    "lint": "mix format --check-formatted"
+  },
+  "keywords": ["phoenix", "liveview", "webmcp", "mcp", "elixir"],
+  "license": "MIT"
+}
