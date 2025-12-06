@@ -224,7 +224,7 @@ this.element.dispatchEvent(
 Properly cleanup tools when the controller disconnects:
 
 ```typescript
-private toolCleanups: Array<() => void> = [];
+private toolCleanups: Array<{ unregister: () => void }> = [];
 
 connect() {
   const cleanup = navigator.modelContext.registerTool({...});
@@ -232,7 +232,7 @@ connect() {
 }
 
 disconnect() {
-  this.toolCleanups.forEach(cleanup => cleanup());
+  this.toolCleanups.forEach((cleanup) => cleanup.unregister());
   this.toolCleanups = [];
 }
 ```
