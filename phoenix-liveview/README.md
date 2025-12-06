@@ -17,7 +17,7 @@ This example shows how to integrate WebMCP with Phoenix LiveView using JavaScrip
 
 - Elixir 1.14+ and Erlang/OTP 25+
 - Node.js 18+
-- [MCP-B Chrome Extension](https://chromewebstore.google.com/detail/mcp-b/fkhbffeojcfadbkpldmbjlbfocgknjlj)
+- A WebMCP-compatible client (browser extension, AI agent, etc.)
 
 ### Installation
 
@@ -32,7 +32,7 @@ mix setup
 mix phx.server
 ```
 
-Then open [http://localhost:4000](http://localhost:4000) in Chrome with the MCP-B extension installed.
+Open [http://localhost:4000](http://localhost:4000) and connect your WebMCP client to discover the available tools.
 
 ## Available Tools
 
@@ -52,22 +52,19 @@ This example exposes 6 AI-callable tools:
 ### Architecture
 
 ```
-AI Agent
-    |
-    v
-MCP-B Extension
-    |
-    v
-navigator.modelContext (WebMCP)
-    |
-    v
-LiveView Hook (JavaScript)
-    |
-    v (pushEvent)
-LiveView (Elixir)
-    |
-    v
-Server State
+AI Agent / WebMCP Client
+           |
+           v
+  navigator.modelContext (WebMCP API)
+           |
+           v
+  LiveView Hook (JavaScript)
+           |
+           v (pushEvent)
+  LiveView (Elixir)
+           |
+           v
+     Server State
 ```
 
 ### Key Components

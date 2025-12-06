@@ -1,11 +1,11 @@
 /**
  * Phoenix LiveView + WebMCP Integration
  *
- * This file demonstrates how to integrate WebMCP with Phoenix LiveView
- * using JavaScript hooks to expose server-side state to AI agents.
+ * Demonstrates integrating WebMCP with Phoenix LiveView using JavaScript hooks.
+ * Tools registered here expose server-side LiveView state to AI agents.
  *
- * @see https://docs.mcp-b.ai/packages/global
- * @see https://hexdocs.pm/phoenix_live_view/js-interop.html
+ * @see https://docs.mcp-b.ai/packages/global - WebMCP global polyfill
+ * @see https://hexdocs.pm/phoenix_live_view/js-interop.html - LiveView JS interop
  */
 
 import "@mcp-b/global";
@@ -15,192 +15,126 @@ import { LiveSocket } from "phoenix_live_view";
 /**
  * WebMCP Hook for Phoenix LiveView
  *
- * This hook registers WebMCP tools that communicate with LiveView.
- * Tools are registered on mount and cleaned up on destroy.
+ * Registers WebMCP tools on mount, cleans up on destroy.
+ * Each tool uses `this.pushEvent()` to communicate with the LiveView process.
  */
 const WebMCPHook = {
-  /**
-   * Registered tool cleanup functions
-   * @type {Array<() => void>}
-   */
+  /** @type {Array<() => void>} Cleanup functions for registered tools */
   cleanupFns: [],
 
-  /**
-   * Called when the LiveView element is mounted
-   * Registers all WebMCP tools
-   */
   mounted() {
-    console.log("WebMCP Hook mounted - registering tools...");
-
     this.registerTools();
-
-    console.log("WebMCP tools registered successfully!");
-    console.log(
-      "Available tools: increment_counter, decrement_counter, set_counter, add_item, remove_item, get_state"
-    );
   },
 
-  /**
-   * Called when the LiveView element is destroyed
-   * Cleans up all registered tools
-   */
   destroyed() {
-    console.log("WebMCP Hook destroyed - cleaning up tools...");
-    this.cleanupFns.forEach((cleanup) => cleanup());
+    this.cleanupFns.forEach((fn) => fn());
     this.cleanupFns = [];
   },
 
   /**
-   * Register all WebMCP tools
-   * Each tool communicates with LiveView via pushEvent/pushEventTo
+   * Register all WebMCP tools.
+   * Each tool calls `this.pushEvent()` to send events to LiveView.
    */
   registerTools() {
-    const self = this;
+    const hook = this;
 
-    // Tool: Increment Counter
+    // Counter tools
     this.registerTool({
       name: "increment_counter",
       description: "Increase the counter by 1",
-      inputSchema: {
-        type: "object",
-        properties: {},
-      },
+      inputSchema: { type: "object", properties: {} },
       async execute() {
-        self.pushEvent("increment", {});
-        return {
-          content: [{ type: "text", text: "Counter incremented by 1" }],
-        };
+        hook.pushEvent("increment", {});
+        return { content: [{ type: "text", text: "Counter incremented" }] };
       },
     });
 
-    // Tool: Decrement Counter
     this.registerTool({
       name: "decrement_counter",
       description: "Decrease the counter by 1 (minimum 0)",
-      inputSchema: {
-        type: "object",
-        properties: {},
-      },
+      inputSchema: { type: "object", properties: {} },
       async execute() {
-        self.pushEvent("decrement", {});
-        return {
-          content: [
-            { type: "text", text: "Counter decremented by 1 (minimum 0)" },
-          ],
-        };
+        hook.pushEvent("decrement", {});
+        return { content: [{ type: "text", text: "Counter decremented" }] };
       },
     });
 
-    // Tool: Set Counter
     this.registerTool({
       name: "set_counter",
       description: "Set the counter to a specific value",
       inputSchema: {
         type: "object",
         properties: {
-          value: {
-            type: "number",
-            description: "The value to set the counter to (must be >= 0)",
-          },
+          value: { type: "number", description: "Value to set (must be >= 0)" },
         },
         required: ["value"],
       },
-      async execute(args) {
-        const { value } = args;
+      async execute({ value }) {
         if (value < 0) {
-          return {
-            content: [{ type: "text", text: "Error: Value must be >= 0" }],
-          };
+          return { content: [{ type: "text", text: "Error: Value must be >= 0" }] };
         }
-        self.pushEvent("set_count", { value });
-        return {
-          content: [{ type: "text", text: `Counter set to ${value}` }],
-        };
+        hook.pushEvent("set_count", { value });
+        return { content: [{ type: "text", text: `Counter set to ${value}` }] };
       },
     });
 
-    // Tool: Add Item
+    // Item management tools
     this.registerTool({
       name: "add_item",
       description: "Add a new item to the list",
       inputSchema: {
         type: "object",
         properties: {
-          name: {
-            type: "string",
-            description: "The name of the item to add",
-          },
+          name: { type: "string", description: "Name of the item to add" },
         },
         required: ["name"],
       },
-      async execute(args) {
-        const { name } = args;
-        if (!name || name.trim() === "") {
-          return {
-            content: [{ type: "text", text: "Error: Item name cannot be empty" }],
-          };
+      async execute({ name }) {
+        if (!name?.trim()) {
+          return { content: [{ type: "text", text: "Error: Name required" }] };
         }
-        self.pushEvent("add_item", { name: name.trim() });
-        return {
-          content: [{ type: "text", text: `Added item: ${name}` }],
-        };
+        hook.pushEvent("add_item", { name: name.trim() });
+        return { content: [{ type: "text", text: `Added: ${name}` }] };
       },
     });
 
-    // Tool: Remove Item
     this.registerTool({
       name: "remove_item",
       description: "Remove an item from the list by its ID",
       inputSchema: {
         type: "object",
         properties: {
-          id: {
-            type: "number",
-            description: "The ID of the item to remove",
-          },
+          id: { type: "number", description: "ID of the item to remove" },
         },
         required: ["id"],
       },
-      async execute(args) {
-        const { id } = args;
-        self.pushEvent("remove_item", { id });
-        return {
-          content: [{ type: "text", text: `Removed item with ID: ${id}` }],
-        };
+      async execute({ id }) {
+        hook.pushEvent("remove_item", { id });
+        return { content: [{ type: "text", text: `Removed item ${id}` }] };
       },
     });
 
-    // Tool: Get State
+    // State query tool (uses reply callback for synchronous response)
     this.registerTool({
       name: "get_state",
-      description:
-        "Get the current state including counter value and all items in the list",
-      inputSchema: {
-        type: "object",
-        properties: {},
-      },
+      description: "Get current counter value and all items",
+      inputSchema: { type: "object", properties: {} },
       async execute() {
         return new Promise((resolve) => {
-          self.pushEvent("get_state", {}, (reply) => {
-            if (reply && reply.ok) {
-              const state = reply.ok;
-              const itemList =
-                state.items.length > 0
-                  ? state.items.map((i) => `  - ${i.name} (ID: ${i.id})`).join("\n")
-                  : "  (no items)";
-
+          hook.pushEvent("get_state", {}, (reply) => {
+            if (reply?.ok) {
+              const { count, items, item_count, last_action } = reply.ok;
+              const itemList = items.length
+                ? items.map((i) => `  - ${i.name} (ID: ${i.id})`).join("\n")
+                : "  (none)";
               resolve({
-                content: [
-                  {
-                    type: "text",
-                    text: `Current State:\n- Counter: ${state.count}\n- Items (${state.item_count}):\n${itemList}\n- Last action: ${state.last_action || "none"}`,
-                  },
-                ],
+                content: [{
+                  type: "text",
+                  text: `Counter: ${count}\nItems (${item_count}):\n${itemList}\nLast action: ${last_action || "none"}`,
+                }],
               });
             } else {
-              resolve({
-                content: [{ type: "text", text: "Error: Could not fetch state" }],
-              });
+              resolve({ content: [{ type: "text", text: "Error fetching state" }] });
             }
           });
         });
@@ -208,36 +142,23 @@ const WebMCPHook = {
     });
   },
 
-  /**
-   * Helper to register a tool and track its cleanup function
-   * @param {object} toolConfig - Tool configuration for registerTool
-   */
-  registerTool(toolConfig) {
-    const cleanup = navigator.modelContext.registerTool(toolConfig);
-    if (typeof cleanup === "function") {
-      this.cleanupFns.push(cleanup);
-    }
+  /** Register a tool and track cleanup function */
+  registerTool(config) {
+    const cleanup = navigator.modelContext.registerTool(config);
+    if (cleanup) this.cleanupFns.push(cleanup);
   },
 };
 
-// LiveView Hooks
-const Hooks = {
-  WebMCP: WebMCPHook,
-};
+// Hooks registry - add WebMCP hook for LiveView elements with phx-hook="WebMCP"
+const Hooks = { WebMCP: WebMCPHook };
 
-// Initialize LiveSocket with hooks
-const csrfToken = document
-  .querySelector("meta[name='csrf-token']")
-  .getAttribute("content");
-
+// Initialize Phoenix LiveSocket with WebMCP hooks
+const csrfToken = document.querySelector("meta[name='csrf-token']").content;
 const liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
   params: { _csrf_token: csrfToken },
   hooks: Hooks,
 });
 
-// Connect when page loads
 liveSocket.connect();
-
-// Expose for debugging
 window.liveSocket = liveSocket;

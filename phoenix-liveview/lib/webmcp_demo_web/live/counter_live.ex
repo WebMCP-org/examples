@@ -144,13 +144,13 @@ defmodule WebmcpDemoWeb.CounterLive do
           <div class="info-card">
             <h2>How This Works</h2>
             <p>
-              This Phoenix LiveView app uses WebMCP hooks to expose server-side state to AI agents:
+              This app exposes server-side state to AI agents via WebMCP:
             </p>
             <ul>
-              <li>Install the MCP-B browser extension</li>
-              <li>Open the extension to see 6 available tools</li>
-              <li>AI can control the counter and manage items</li>
-              <li>LiveView state updates in real-time</li>
+              <li>Connect any WebMCP-compatible client</li>
+              <li>Discover 6 tools for counter and item management</li>
+              <li>AI controls trigger LiveView events</li>
+              <li>Server state syncs to UI in real-time</li>
             </ul>
           </div>
 
@@ -187,7 +187,7 @@ defmodule WebmcpDemoWeb.CounterLive do
           <div class="card items-card">
             <h2>Items (<%= length(@items) %>)</h2>
             <%= if Enum.empty?(@items) do %>
-              <p class="empty-state">No items yet. Ask AI to add some!</p>
+              <p class="empty-state">No items yet. Use add_item tool to add some.</p>
             <% else %>
               <ul class="items-list">
                 <%= for item <- @items do %>
