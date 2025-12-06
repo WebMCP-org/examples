@@ -27,7 +27,6 @@ let { notes = $bindable(), showNotification }: Props = $props();
 $effect(() => {
   const registrations: Array<{ unregister: () => void }> = [];
 
-  // Tool: Add Note
   registrations.push(navigator.modelContext.registerTool({
     name: 'add_note',
     description: 'Create a new note',
@@ -72,7 +71,6 @@ $effect(() => {
     },
   }));
 
-  // Tool: Update Note
   registrations.push(navigator.modelContext.registerTool({
     name: 'update_note',
     description: 'Update an existing note',
@@ -130,7 +128,6 @@ $effect(() => {
     },
   }));
 
-  // Tool: Delete Note
   registrations.push(navigator.modelContext.registerTool({
     name: 'delete_note',
     description: 'Delete a note',
@@ -164,7 +161,6 @@ $effect(() => {
     },
   }));
 
-  // Tool: List Notes
   registrations.push(navigator.modelContext.registerTool({
     name: 'list_notes',
     description: 'Get all notes',
@@ -179,7 +175,6 @@ $effect(() => {
     },
   }));
 
-  // Tool: Toggle Pin
   registrations.push(navigator.modelContext.registerTool({
     name: 'toggle_pin',
     description: 'Pin or unpin a note',
@@ -214,7 +209,6 @@ $effect(() => {
     },
   }));
 
-  // Tool: Search Notes
   registrations.push(navigator.modelContext.registerTool({
     name: 'search_notes',
     description: 'Search notes by title or content',
@@ -249,7 +243,6 @@ $effect(() => {
     },
   }));
 
-  // Tool: Get Stats
   registrations.push(navigator.modelContext.registerTool({
     name: 'get_stats',
     description: 'Get notes statistics',

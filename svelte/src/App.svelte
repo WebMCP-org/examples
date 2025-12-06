@@ -15,11 +15,11 @@ import NoteList from './components/NoteList.svelte';
 import NoteStats from './components/NoteStats.svelte';
 import './app.css';
 
-// Svelte 5 runes for reactive state
+// State
 let notes = $state<Note[]>([]);
 let notification = $state<Notification | null>(null);
 
-// Derived state using $derived rune
+// Derived values
 const sortedNotes = $derived(sortNotes(notes));
 const stats = $derived(calculateNoteStats(notes));
 
