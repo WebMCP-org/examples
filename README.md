@@ -36,7 +36,7 @@ git clone https://github.com/WebMCP-org/examples.git
 cd examples
 
 # Choose an example
-cd vanilla  # or react
+cd vanilla  # or react, angular
 
 # Install and run
 pnpm install
@@ -85,6 +85,24 @@ A task management application showcasing React integration with the `useWebMCP()
 **Tech:** React 18, TypeScript, Vite, Zod, `@mcp-b/react-webmcp`, `@mcp-b/global`
 
 [→ Documentation](./react/README.md)
+
+---
+
+### Angular Example
+
+**Location:** `/angular`
+
+A note-taking application showcasing Angular integration with services and signals.
+
+**Features:**
+- Uses `navigator.modelContext.registerTool()` via Angular service
+- Angular signals for reactive state management
+- Automatic cleanup via `DestroyRef`
+- 6 AI-callable tools (note CRUD operations + stats)
+
+**Tech:** Angular 19, TypeScript, `@mcp-b/global`
+
+[→ Documentation](./angular/README.md)
 
 ---
 
@@ -223,6 +241,7 @@ pnpm preview                # Preview production build
 ### Example Documentation
 - [Vanilla Example](./vanilla/README.md) - Vanilla JavaScript implementation
 - [React Example](./react/README.md) - React with hooks implementation
+- [Angular Example](./angular/README.md) - Angular with services implementation
 - [Legacy Examples](./relegated/README.md) - Deprecated implementations
 
 ## Tech Stack

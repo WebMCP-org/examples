@@ -24,6 +24,12 @@ Welcome! This document helps you navigate the WebMCP Examples repository efficie
 - **Key file**: `react/src/App.tsx` - React component with `useWebMCP` hooks
 - **API used**: `useWebMCP()` hook
 
+#### Angular + TypeScript
+- **[angular/README.md](./angular/README.md)** - Note manager using `@mcp-b/global` with Angular services
+- **Location**: `/angular`
+- **Key file**: `angular/src/app/services/webmcp.service.ts` - Angular service with tool registration
+- **API used**: `navigator.modelContext.registerTool()` via service
+
 ### Legacy Examples (Deprecated - DO NOT USE)
 - **[relegated/README.md](./relegated/README.md)** - Old examples using deprecated MCP SDK
 - **Warning**: These use the legacy `@modelcontextprotocol/sdk` API
@@ -40,7 +46,7 @@ Welcome! This document helps you navigate the WebMCP Examples repository efficie
 
 ```bash
 # Navigate to the example
-cd vanilla  # or react
+cd vanilla  # or react, angular
 
 # Install dependencies
 pnpm install
@@ -55,6 +61,7 @@ pnpm dev
 2. **Choose the right location**:
    - `/vanilla` for pure TypeScript/JavaScript
    - `/react` for React-based examples
+   - `/angular` for Angular-based examples
 3. **Create self-contained directory** with:
    - `README.md` - Documentation
    - `package.json` - Dependencies
@@ -151,6 +158,12 @@ example-name/
 - Entry: `react/src/main.tsx`
 - Root: `react/src/App.tsx`
 - Config: `react/vite.config.ts`
+
+**Angular Example:**
+- Entry: `angular/src/main.ts`
+- Root: `angular/src/app/app.component.ts`
+- WebMCP: `angular/src/app/services/webmcp.service.ts`
+- Config: `angular/angular.json`
 
 ## WebMCP Package Documentation
 
