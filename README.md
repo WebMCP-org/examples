@@ -36,7 +36,7 @@ git clone https://github.com/WebMCP-org/examples.git
 cd examples
 
 # Choose an example
-cd vanilla  # or react
+cd vanilla  # or react, rails
 
 # Install and run
 pnpm install
@@ -85,6 +85,25 @@ A task management application showcasing React integration with the `useWebMCP()
 **Tech:** React 18, TypeScript, Vite, Zod, `@mcp-b/react-webmcp`, `@mcp-b/global`
 
 [→ Documentation](./react/README.md)
+
+---
+
+### Rails Example
+
+**Location:** `/rails`
+
+A bookmarks management application demonstrating Rails 7+ integration with Stimulus controllers.
+
+**Features:**
+- Uses `navigator.modelContext.registerTool()` with Stimulus controllers
+- Follows Rails conventions (`app/javascript/controllers/`)
+- Pure business logic separated into `lib/` modules
+- Compatible with Vite, importmaps, or esbuild
+- 6 AI-callable tools (bookmark CRUD operations + search + stats)
+
+**Tech:** Rails 7+, Stimulus, TypeScript, Vite, `@mcp-b/global`
+
+[→ Documentation](./rails/README.md)
 
 ---
 
@@ -204,7 +223,7 @@ WebMCP enables AI assistants to interact with websites through APIs instead of s
 
 ```bash
 # Development (per example)
-cd vanilla  # or react
+cd vanilla  # or react, rails
 pnpm dev                    # Run development server
 pnpm build                  # Build for production
 pnpm preview                # Preview production build
@@ -223,6 +242,7 @@ pnpm preview                # Preview production build
 ### Example Documentation
 - [Vanilla Example](./vanilla/README.md) - Vanilla JavaScript implementation
 - [React Example](./react/README.md) - React with hooks implementation
+- [Rails Example](./rails/README.md) - Rails with Stimulus controllers
 - [Legacy Examples](./relegated/README.md) - Deprecated implementations
 
 ## Tech Stack

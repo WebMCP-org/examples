@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rails WebMCP Bookmarks</title>
+    <link rel="stylesheet" href="/app/assets/stylesheets/application.css" />
+  </head>
+  <body>
+    <div id="app">
+      <!-- Main container with Stimulus controller -->
+      <div
+        data-controller="bookmarks-webmcp"
+        data-bookmarks-webmcp-bookmarks-value="[]"
+      >
+        <!-- Notification area -->
+        <div id="notification" class="notification hidden"></div>
+
+        <div class="container">
+          <header class="header">
+            <h1>Bookmarks Manager</h1>
+            <p class="subtitle">AI-powered bookmarks with Rails + WebMCP</p>
+          </header>
+
+          <div class="content">
+            <section class="info-section">
+              <div class="info-card">
+                <h2>How This Works</h2>
+                <p>
+                  This Rails app uses <strong>Stimulus controllers</strong> with WebMCP:
+                </p>
+                <ul>
+                  <li>Install the MCP-B browser extension</li>
+                  <li>Open the extension to see 6 available tools</li>
+                  <li>Ask AI to manage your bookmarks</li>
+                  <li>Watch the UI update in real-time!</li>
+                </ul>
+              </div>
+
+              <div class="tools-card">
+                <h2>Available Tools</h2>
+                <ul>
+                  <li><code>add_bookmark</code> - Save new bookmarks</li>
+                  <li><code>delete_bookmark</code> - Remove bookmarks</li>
+                  <li><code>update_bookmark</code> - Edit existing bookmarks</li>
+                  <li><code>list_bookmarks</code> - View all bookmarks</li>
+                  <li><code>search_bookmarks</code> - Find bookmarks</li>
+                  <li><code>get_bookmark_stats</code> - View statistics</li>
+                </ul>
+              </div>
+            </section>
+
+            <section class="stats-section">
+              <h2>Statistics</h2>
+              <div class="stats-grid" id="stats">
+                <div class="stat-item">
+                  <span class="stat-value" id="stat-total">0</span>
+                  <span class="stat-label">Total Bookmarks</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-value" id="stat-tags">0</span>
+                  <span class="stat-label">Unique Tags</span>
+                </div>
+              </div>
+            </section>
+
+            <section class="bookmarks-section">
+              <h2>Saved Bookmarks</h2>
+              <div id="bookmarks-list" class="bookmarks-list">
+                <p class="empty-state">No bookmarks yet. Ask AI to add some!</p>
+              </div>
+            </section>
+          </div>
+
+          <footer class="footer">
+            <p>
+              Built with
+              <a href="https://docs.mcp-b.ai" target="_blank" rel="noopener noreferrer">WebMCP</a>
+              &bull; Rails &bull; Stimulus
+            </p>
+          </footer>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/app/javascript/application.ts"></script>
+    <script type="module">
+      // Handle custom events for UI updates
+      document.addEventListener('bookmarks:notification', (event) => {
+        const { message, type } = event.detail;
+        const notification = document.getElementById('notification');
+        if (notification) {
+          notification.textContent = message;
+          notification.className = `notification ${type}`;
+          setTimeout(() => {
+            notification.className = 'notification hidden';
+          }, 3000);
+        }
+      });
+
+      document.addEventListener('bookmarks:updated', (event) => {
+        const { bookmarks } = event.detail;
+        const list = document.getElementById('bookmarks-list');
+        const statTotal = document.getElementById('stat-total');
+        const statTags = document.getElementById('stat-tags');
+
+        if (statTotal) {
+          statTotal.textContent = bookmarks.length.toString();
+        }
+
+        if (statTags) {
+          const allTags = bookmarks.flatMap((b) => b.tags || []);
+          statTags.textContent = new Set(allTags).size.toString();
+        }
+
+        if (list) {
+          if (bookmarks.length === 0) {
+            list.innerHTML = '<p class="empty-state">No bookmarks yet. Ask AI to add some!</p>';
+          } else {
+            list.innerHTML = bookmarks
+              .map(
+                (b) => `
+                <div class="bookmark-item">
+                  <div class="bookmark-header">
+                    <a href="${b.url}" target="_blank" rel="noopener noreferrer" class="bookmark-title">${b.title}</a>
+                  </div>
+                  <div class="bookmark-url">${b.url}</div>
+                  ${b.description ? `<p class="bookmark-description">${b.description}</p>` : ''}
+                  ${
+                    b.tags && b.tags.length > 0
+                      ? `<div class="bookmark-tags">${b.tags.map((t) => `<span class="tag">${t}</span>`).join('')}</div>`
+                      : ''
+                  }
+                </div>
+              `
+              )
+              .join('');
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
