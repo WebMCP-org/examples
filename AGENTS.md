@@ -24,6 +24,12 @@ Welcome! This document helps you navigate the WebMCP Examples repository efficie
 - **Key file**: `react/src/App.tsx` - React component with `useWebMCP` hooks
 - **API used**: `useWebMCP()` hook
 
+#### Rails + Stimulus
+- **[rails/README.md](./rails/README.md)** - Bookmarks manager using Stimulus controllers
+- **Location**: `/rails`
+- **Key file**: `rails/app/javascript/controllers/bookmarks_webmcp_controller.ts` - Stimulus controller with WebMCP tools
+- **API used**: `navigator.modelContext.registerTool()` in Stimulus
+
 ### Legacy Examples (Deprecated - DO NOT USE)
 - **[relegated/README.md](./relegated/README.md)** - Old examples using deprecated MCP SDK
 - **Warning**: These use the legacy `@modelcontextprotocol/sdk` API
@@ -40,7 +46,7 @@ Welcome! This document helps you navigate the WebMCP Examples repository efficie
 
 ```bash
 # Navigate to the example
-cd vanilla  # or react
+cd vanilla  # or react, rails
 
 # Install dependencies
 pnpm install
@@ -55,6 +61,7 @@ pnpm dev
 2. **Choose the right location**:
    - `/vanilla` for pure TypeScript/JavaScript
    - `/react` for React-based examples
+   - `/rails` for Rails with Stimulus examples
 3. **Create self-contained directory** with:
    - `README.md` - Documentation
    - `package.json` - Dependencies
@@ -151,6 +158,11 @@ example-name/
 - Entry: `react/src/main.tsx`
 - Root: `react/src/App.tsx`
 - Config: `react/vite.config.ts`
+
+**Rails Example:**
+- Entry: `rails/app/javascript/application.ts`
+- Controller: `rails/app/javascript/controllers/bookmarks_webmcp_controller.ts`
+- Config: `rails/vite.config.ts`
 
 ## WebMCP Package Documentation
 

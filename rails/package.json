@@ -1,0 +1,21 @@
+{
+  "name": "rails-webmcp-example",
+  "version": "1.0.0",
+  "description": "Rails example using WebMCP with Stimulus controllers",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@hotwired/stimulus": "^3.2.2",
+    "@mcp-b/global": "latest"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0",
+    "vite": "^6.0.0"
+  }
+}

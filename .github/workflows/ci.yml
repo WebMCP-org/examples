@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        example: [vanilla, react]
+        example: [vanilla, react, rails]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -52,7 +52,7 @@ jobs:
     needs: lint-and-typecheck
     strategy:
       matrix:
-        example: [vanilla, react]
+        example: [vanilla, react, rails]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
