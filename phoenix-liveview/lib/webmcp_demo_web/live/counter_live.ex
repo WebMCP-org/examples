@@ -106,7 +106,7 @@ defmodule WebmcpDemoWeb.CounterLive do
       last_action: socket.assigns.last_action
     }
 
-    {:reply, {:ok, state}, socket}
+    {:reply, state, socket}
   end
 
   defp push_notification(socket, type, message) do

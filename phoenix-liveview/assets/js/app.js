@@ -122,8 +122,8 @@ const WebMCPHook = {
       async execute() {
         return new Promise((resolve) => {
           hook.pushEvent("get_state", {}, (reply) => {
-            if (reply?.ok) {
-              const { count, items, item_count, last_action } = reply.ok;
+            if (reply?.count !== undefined) {
+              const { count, items, item_count, last_action } = reply;
               const itemList = items.length
                 ? items.map((i) => `  - ${i.name} (ID: ${i.id})`).join("\n")
                 : "  (none)";
