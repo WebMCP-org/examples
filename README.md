@@ -88,6 +88,24 @@ A task management application showcasing React integration with the `useWebMCP()
 
 ---
 
+### Phoenix LiveView Example
+
+**Location:** `/phoenix-liveview`
+
+A counter and item management app demonstrating WebMCP integration with Phoenix LiveView and server-side state.
+
+**Features:**
+- Uses `navigator.modelContext.registerTool()` via LiveView hooks
+- Server-side state management with real-time sync
+- Bidirectional communication: AI -> JavaScript -> LiveView -> Server
+- 6 AI-callable tools (counter operations + item CRUD + state query)
+
+**Tech:** Elixir, Phoenix 1.7, LiveView 1.0, `@mcp-b/global`
+
+[→ Documentation](./phoenix-liveview/README.md)
+
+---
+
 ### Legacy Examples (Deprecated)
 
 **Location:** `/relegated`
@@ -223,15 +241,17 @@ pnpm preview                # Preview production build
 ### Example Documentation
 - [Vanilla Example](./vanilla/README.md) - Vanilla JavaScript implementation
 - [React Example](./react/README.md) - React with hooks implementation
+- [Phoenix LiveView Example](./phoenix-liveview/README.md) - Elixir/Phoenix implementation
 - [Legacy Examples](./relegated/README.md) - Deprecated implementations
 
 ## Tech Stack
 
-- **Package Manager:** pnpm
-- **Build Tool:** Vite 6
-- **Language:** TypeScript 5.6
+- **Package Manager:** pnpm (JS), Mix (Elixir)
+- **Build Tool:** Vite 6, esbuild
+- **Languages:** TypeScript 5.6, Elixir 1.14+
 - **WebMCP Core:** @mcp-b/global
 - **React Integration:** @mcp-b/react-webmcp
+- **Phoenix Integration:** LiveView hooks + @mcp-b/global
 - **Validation:** JSON Schema, Zod
 
 ## Contributing

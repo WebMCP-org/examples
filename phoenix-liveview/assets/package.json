@@ -1,0 +1,9 @@
+{
+  "name": "phoenix-liveview-webmcp-assets",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@mcp-b/global": "latest"
+  }
+}
