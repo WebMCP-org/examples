@@ -1,25 +1,21 @@
 /**
- * Note management service
+ * Note Management Service
  *
- * Provides pure functions for note CRUD operations
+ * Manages note state using Angular signals for reactive updates.
+ * This service is consumed by WebMCPService to expose tools to AI agents.
  */
 
 import { Injectable, signal, computed } from '@angular/core';
 import type { Note, CreateNoteParams, NoteColor, NoteStats } from '../types';
 
-/**
- * Service for managing notes with reactive state
- */
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class NoteService {
   private readonly notesSignal = signal<Note[]>([]);
 
-  /** Readonly signal of all notes */
+  /** Readonly access to all notes */
   readonly notes = this.notesSignal.asReadonly();
 
-  /** Computed signal for pinned notes first, then by date */
+  /** Notes sorted by pinned status, then by most recently updated */
   readonly sortedNotes = computed(() => {
     return [...this.notesSignal()].sort((a, b) => {
       if (a.pinned !== b.pinned) return b.pinned ? 1 : -1;
@@ -27,7 +23,7 @@ export class NoteService {
     });
   });
 
-  /** Computed signal for note statistics */
+  /** Computed statistics about notes */
   readonly stats = computed<NoteStats>(() => {
     const notes = this.notesSignal();
     const byColor = { yellow: 0, green: 0, blue: 0, pink: 0, purple: 0 };
@@ -40,9 +36,7 @@ export class NoteService {
     };
   });
 
-  /**
-   * Create a new note
-   */
+  /** Create a new note and add it to the collection */
   addNote(params: CreateNoteParams): Note {
     const note: Note = {
       id: crypto.randomUUID(),
@@ -58,9 +52,7 @@ export class NoteService {
     return note;
   }
 
-  /**
-   * Update an existing note
-   */
+  /** Update an existing note by ID */
   updateNote(
     id: string,
     updates: Partial<Pick<Note, 'title' | 'content' | 'color' | 'pinned'>>
@@ -80,9 +72,7 @@ export class NoteService {
     return updatedNote;
   }
 
-  /**
-   * Delete a note by ID
-   */
+  /** Delete a note by ID, returns the deleted note or null */
   deleteNote(id: string): Note | null {
     const note = this.notesSignal().find((n) => n.id === id);
     if (!note) return null;
@@ -91,9 +81,7 @@ export class NoteService {
     return note;
   }
 
-  /**
-   * Toggle pinned status
-   */
+  /** Toggle the pinned status of a note */
   togglePin(id: string): Note | null {
     const note = this.notesSignal().find((n) => n.id === id);
     if (!note) return null;
@@ -101,9 +89,7 @@ export class NoteService {
     return this.updateNote(id, { pinned: !note.pinned });
   }
 
-  /**
-   * Search notes by title or content
-   */
+  /** Search notes by title or content (case-insensitive) */
   searchNotes(query: string): Note[] {
     const lowerQuery = query.toLowerCase();
     return this.notesSignal().filter(
@@ -113,23 +99,17 @@ export class NoteService {
     );
   }
 
-  /**
-   * Filter notes by color
-   */
+  /** Filter notes by color */
   filterByColor(color: NoteColor): Note[] {
     return this.notesSignal().filter((note) => note.color === color);
   }
 
-  /**
-   * Get all notes
-   */
+  /** Get all notes as an array */
   getAllNotes(): Note[] {
     return this.notesSignal();
   }
 
-  /**
-   * Clear all notes
-   */
+  /** Clear all notes, returns the count of deleted notes */
   clearAllNotes(): number {
     const count = this.notesSignal().length;
     this.notesSignal.set([]);
