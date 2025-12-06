@@ -2,19 +2,10 @@
  * Type definitions for the note-taking application
  */
 
-/**
- * Color options for notes
- */
+/** Available color options for notes */
 export type NoteColor = 'yellow' | 'green' | 'blue' | 'pink' | 'purple';
 
-/**
- * Notification types for UI feedback
- */
-export type NotificationType = 'success' | 'error';
-
-/**
- * Represents a note in the note manager
- */
+/** Represents a note in the note manager */
 export interface Note {
   id: string;
   title: string;
@@ -25,9 +16,7 @@ export interface Note {
   updatedAt: Date;
 }
 
-/**
- * Parameters for creating a new note
- */
+/** Parameters for creating a new note */
 export interface CreateNoteParams {
   title: string;
   content: string;
@@ -35,19 +24,9 @@ export interface CreateNoteParams {
   pinned?: boolean;
 }
 
-/**
- * Statistics about notes
- */
+/** Statistics about notes */
 export interface NoteStats {
   total: number;
   pinned: number;
   byColor: Record<NoteColor, number>;
-}
-
-/**
- * Notification state
- */
-export interface Notification {
-  message: string;
-  type: NotificationType;
 }

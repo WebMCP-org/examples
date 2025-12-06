@@ -1,8 +1,13 @@
 /**
  * WebMCP Service for Angular
  *
- * Registers WebMCP tools for AI interaction with the note manager.
- * Tools are registered on service initialization and remain active.
+ * This service demonstrates how to integrate WebMCP with Angular.
+ * It registers tools that AI agents can call to interact with the app.
+ *
+ * Key patterns shown:
+ * - Using navigator.modelContext.registerTool() for tool registration
+ * - Storing tool references for cleanup via DestroyRef
+ * - Connecting tools to application state (NoteService)
  *
  * @see https://docs.mcp-b.ai/frameworks/angular
  */
@@ -12,20 +17,15 @@ import '@mcp-b/global';
 import { NoteService } from './note.service';
 import type { NoteColor } from '../types';
 
-/**
- * Service that registers WebMCP tools for note management
- */
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class WebMCPService {
   private readonly noteService = inject(NoteService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly registeredTools: Array<{ unregister: () => void }> = [];
 
   /**
-   * Initialize WebMCP tools
-   * Call this method from the root component's constructor or ngOnInit
+   * Initialize all WebMCP tools.
+   * Call this from your root component's ngOnInit.
    */
   initialize(): void {
     this.registerAddNoteTool();
@@ -35,20 +35,19 @@ export class WebMCPService {
     this.registerTogglePinTool();
     this.registerGetStatsTool();
 
-    console.log('WebMCP tools registered successfully!');
-    console.log(
-      'Available tools: add_note, delete_note, list_notes, search_notes, toggle_pin, get_note_stats'
-    );
+    console.log('WebMCP: 6 tools registered (add_note, delete_note, list_notes, search_notes, toggle_pin, get_note_stats)');
 
+    // Cleanup: unregister all tools when service is destroyed
     this.destroyRef.onDestroy(() => {
       this.registeredTools.forEach((tool) => tool.unregister());
-      console.log('WebMCP tools unregistered');
     });
   }
 
-  /**
-   * WebMCP Tool: Add Note
-   */
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Tool Registration Methods
+  // Each method registers one WebMCP tool using navigator.modelContext.registerTool()
+  // ─────────────────────────────────────────────────────────────────────────────
+
   private registerAddNoteTool(): void {
     const tool = navigator.modelContext.registerTool({
       name: 'add_note',
@@ -100,9 +99,6 @@ export class WebMCPService {
     this.registeredTools.push(tool);
   }
 
-  /**
-   * WebMCP Tool: Delete Note
-   */
   private registerDeleteNoteTool(): void {
     const tool = navigator.modelContext.registerTool({
       name: 'delete_note',
@@ -136,9 +132,6 @@ export class WebMCPService {
     this.registeredTools.push(tool);
   }
 
-  /**
-   * WebMCP Tool: List Notes
-   */
   private registerListNotesTool(): void {
     const tool = navigator.modelContext.registerTool({
       name: 'list_notes',
@@ -187,9 +180,6 @@ export class WebMCPService {
     this.registeredTools.push(tool);
   }
 
-  /**
-   * WebMCP Tool: Search Notes
-   */
   private registerSearchNotesTool(): void {
     const tool = navigator.modelContext.registerTool({
       name: 'search_notes',
@@ -232,9 +222,6 @@ export class WebMCPService {
     this.registeredTools.push(tool);
   }
 
-  /**
-   * WebMCP Tool: Toggle Pin
-   */
   private registerTogglePinTool(): void {
     const tool = navigator.modelContext.registerTool({
       name: 'toggle_pin',
@@ -273,9 +260,6 @@ export class WebMCPService {
     this.registeredTools.push(tool);
   }
 
-  /**
-   * WebMCP Tool: Get Stats
-   */
   private registerGetStatsTool(): void {
     const tool = navigator.modelContext.registerTool({
       name: 'get_note_stats',

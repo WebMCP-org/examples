@@ -1,8 +1,8 @@
 /**
- * Note Manager Application with WebMCP Integration
+ * Note Manager - Angular WebMCP Example
  *
- * This application demonstrates the WebMCP API using Angular services.
- * Tools are registered via WebMCPService and can be called by AI agents.
+ * A simple note-taking app demonstrating WebMCP integration with Angular.
+ * AI agents can create, search, and manage notes through registered tools.
  *
  * @see https://docs.mcp-b.ai/frameworks/angular
  */
@@ -11,13 +11,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NoteService } from './services/note.service';
 import { WebMCPService } from './services/webmcp.service';
-import type { Note, NoteColor } from './types';
 
-/**
- * Main application component
- *
- * Displays notes and provides UI for the note manager with AI integration
- */
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -300,9 +294,6 @@ export class AppComponent implements OnInit {
     this.webmcpService.initialize();
   }
 
-  /**
-   * Format date for display
-   */
   formatDate(date: Date): string {
     return date.toLocaleDateString('en-US', {
       month: 'short',
