@@ -30,6 +30,12 @@ Welcome! This document helps you navigate the WebMCP Examples repository efficie
 - **Key file**: `rails/app/javascript/controllers/bookmarks_webmcp_controller.ts` - Stimulus controller with WebMCP tools
 - **API used**: `navigator.modelContext.registerTool()` in Stimulus
 
+#### Angular + TypeScript
+- **[angular/README.md](./angular/README.md)** - Note manager using `@mcp-b/global` with Angular services
+- **Location**: `/angular`
+- **Key file**: `angular/src/app/services/webmcp.service.ts` - Angular service with tool registration
+- **API used**: `navigator.modelContext.registerTool()` via service
+
 ### Legacy Examples (Deprecated - DO NOT USE)
 - **[relegated/README.md](./relegated/README.md)** - Old examples using deprecated MCP SDK
 - **Warning**: These use the legacy `@modelcontextprotocol/sdk` API
@@ -46,7 +52,7 @@ Welcome! This document helps you navigate the WebMCP Examples repository efficie
 
 ```bash
 # Navigate to the example
-cd vanilla  # or react, rails
+cd vanilla  # or react, rails, angular
 
 # Install dependencies
 pnpm install
@@ -62,6 +68,7 @@ pnpm dev
    - `/vanilla` for pure TypeScript/JavaScript
    - `/react` for React-based examples
    - `/rails` for Rails with Stimulus examples
+   - `/angular` for Angular-based examples
 3. **Create self-contained directory** with:
    - `README.md` - Documentation
    - `package.json` - Dependencies
@@ -163,6 +170,12 @@ example-name/
 - Entry: `rails/app/javascript/application.ts`
 - Controller: `rails/app/javascript/controllers/bookmarks_webmcp_controller.ts`
 - Config: `rails/vite.config.ts`
+
+**Angular Example:**
+- Entry: `angular/src/main.ts`
+- Root: `angular/src/app/app.component.ts`
+- WebMCP: `angular/src/app/services/webmcp.service.ts`
+- Config: `angular/angular.json`
 
 ## WebMCP Package Documentation
 

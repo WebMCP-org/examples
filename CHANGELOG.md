@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Angular TypeScript example** (`/angular`)
+  - Note-taking application
+  - Uses `@mcp-b/global` package with Angular services
+  - Demonstrates `navigator.modelContext.registerTool()` via service pattern
+  - Angular signals for reactive state management
+  - Automatic cleanup via `DestroyRef`
+  - 6 AI-callable tools for note management
 - CONTRIBUTING.md with development standards and best practices
 - AGENTS.md navigation hub for AI agents
 - CODE_OF_CONDUCT.md with community standards
@@ -122,6 +129,7 @@ See the [vanilla](./vanilla/) and [react](./react/) examples for complete implem
 - Additional example applications
 - Vue.js example using WebMCP
 - Svelte example using WebMCP
+- Nuxt example using WebMCP
 - Advanced patterns (multi-tool coordination, state persistence)
 - Testing guide for WebMCP tools
 - Performance optimization examples

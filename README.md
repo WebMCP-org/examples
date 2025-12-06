@@ -36,7 +36,7 @@ git clone https://github.com/WebMCP-org/examples.git
 cd examples
 
 # Choose an example
-cd vanilla  # or react, rails
+cd vanilla  # or react, rails, angular
 
 # Install and run
 pnpm install
@@ -104,6 +104,24 @@ A bookmarks management application demonstrating Rails 7+ integration with Stimu
 **Tech:** Rails 7+, Stimulus, TypeScript, Vite, `@mcp-b/global`
 
 [→ Documentation](./rails/README.md)
+
+---
+
+### Angular Example
+
+**Location:** `/angular`
+
+A note-taking application showcasing Angular integration with services and signals.
+
+**Features:**
+- Uses `navigator.modelContext.registerTool()` via Angular service
+- Angular signals for reactive state management
+- Automatic cleanup via `DestroyRef`
+- 6 AI-callable tools (note CRUD operations + stats)
+
+**Tech:** Angular 19, TypeScript, `@mcp-b/global`
+
+[→ Documentation](./angular/README.md)
 
 ---
 
@@ -243,6 +261,7 @@ pnpm preview                # Preview production build
 - [Vanilla Example](./vanilla/README.md) - Vanilla JavaScript implementation
 - [React Example](./react/README.md) - React with hooks implementation
 - [Rails Example](./rails/README.md) - Rails with Stimulus controllers
+- [Angular Example](./angular/README.md) - Angular with services implementation
 - [Legacy Examples](./relegated/README.md) - Deprecated implementations
 
 ## Tech Stack
