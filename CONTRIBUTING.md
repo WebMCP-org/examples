@@ -458,7 +458,7 @@ example-name/
 ### External Resources
 - [TypeScript Handbook](https://www.typescriptlang.org/docs/)
 - [React TypeScript Cheatsheet](https://react-typescript-cheatsheet.netlify.app/)
-- [MCP Specification](https://spec.modelcontextprotocol.io/)
+- [MCP Specification](https://modelcontextprotocol.io/specification/versioning)
 - [Zod Documentation](https://zod.dev/)
 
 ## Questions?

@@ -22,7 +22,7 @@ pnpm install
 pnpm dev
 ```
 
-Then open your browser and install the [MCP-B extension](https://github.com/WebMCP-org/WebMCP) to interact with the tools.
+Then open your browser and install the [MCP-B extension](https://chromewebstore.google.com/detail/mcp-b-extension/daohopfhkdelnpemnhlekblhnikhdhfa) to interact with the tools.
 
 ## 🛠️ Available Tools
 

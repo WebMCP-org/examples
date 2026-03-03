@@ -253,7 +253,7 @@ mix dialyzer
 
 ### Model Context Protocol
 - [MCP Documentation](https://modelcontextprotocol.io/)
-- [MCP Specification](https://spec.modelcontextprotocol.io/)
+- [MCP Specification](https://modelcontextprotocol.io/specification/versioning)
 
 ## License
 
