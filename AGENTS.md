@@ -211,7 +211,7 @@ example-name/
 
 ### MCP Resources
 - [Model Context Protocol](https://modelcontextprotocol.io/) - MCP overview
-- [MCP Specification](https://spec.modelcontextprotocol.io/) - Protocol spec
+- [MCP Specification](https://modelcontextprotocol.io/specification/versioning) - Protocol spec
 - [MCP UI Resources](https://mcpui.dev/guide/introduction) - UI resource types
 
 ### Tools

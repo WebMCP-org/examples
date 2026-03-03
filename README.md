@@ -48,7 +48,7 @@ pnpm dev
 
 - Node.js 18 or higher
 - pnpm package manager (or npm/yarn)
-- Chrome browser with [MCP-B extension](https://github.com/WebMCP-org/WebMCP)
+- Chrome browser with [MCP-B extension](https://chromewebstore.google.com/detail/mcp-b-extension/daohopfhkdelnpemnhlekblhnikhdhfa)
 
 ## Examples
 
@@ -339,7 +339,7 @@ Fork, experiment, report issues, submit improvements.
 
 ### Model Context Protocol
 - [MCP Documentation](https://modelcontextprotocol.io/) - Official protocol documentation
-- [MCP Specification](https://spec.modelcontextprotocol.io/) - Technical specification
+- [MCP Specification](https://modelcontextprotocol.io/specification/versioning) - Technical specification
 - [MCP GitHub](https://github.com/modelcontextprotocol/modelcontextprotocol) - Specification repository
 
 ### Development Tools
